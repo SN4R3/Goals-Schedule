@@ -6,8 +6,8 @@ export default class Login extends Component {
     super()
     this.form = React.createRef();
     this.state = {
-      email: '',
-      password: '',
+      email: 'mattf1993@hotmail.com',
+      password: 'password1234',
       errMsg: '',
     }
     this.loginUser = this.loginUser.bind(this)
