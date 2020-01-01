@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom'
 import Login from "../forms/Login";
+import "./Navbar.css";
 
 export default class Navbar extends Component {
   constructor(props) {
@@ -7,7 +9,7 @@ export default class Navbar extends Component {
     this.state = { menuToggled: false, loginToggled: false };
 
     this.handleToggle = this.handleToggle.bind(this);
-    this.hideLogin = this.hideLogin.bind(this)
+    this.hideLogin = this.hideLogin.bind(this);
   }
 
   handleToggle(e) {
@@ -18,8 +20,8 @@ export default class Navbar extends Component {
 
   hideLogin() {
     this.setState({
-      loginToggled: false,
-    })
+      loginToggled: false
+    });
   }
 
   render() {
@@ -63,16 +65,17 @@ export default class Navbar extends Component {
               {" "}
               <i className="fas fa-key"></i> Login
             </button>
-            <button className="btn btn-secondary">
-              {" "}
-              <i className="fas fa-edit"></i> Sign Up
-            </button>
+            <Link to="/register">
+              <button className="btn btn-secondary">
+                {" "}
+                <i className="fas fa-edit"></i> Sign Up
+              </button>
+            </Link>
             <div
+              id="navbarLoginWrapper"
               className={this.state.loginToggled ? "d-block" : "d-none"}
-              id="loginToggled"
-              style={this.state.menuToggled ? popupStyle : absoluteStyle}
             >
-              <Login hideLogin={this.hideLogin}/>
+              <Login hideLogin={this.hideLogin} />
             </div>
           </div>
         </div>
@@ -82,20 +85,4 @@ export default class Navbar extends Component {
 }
 const userContainer = {
   position: "relative"
-};
-const absoluteStyle = {
-  position: "absolute",
-  top: "75px",
-  right: "5px",
-  padding: "10px",
-  border: "1px solid #eaeaea",
-  borderRadius: "5px",
-  width: "115%",
-};
-const popupStyle = {
-  position: "fixed",
-  padding: "10px",
-  background: "whitesmoke",
-  borderRadius: "5px",
-  width: "95%",
 };
