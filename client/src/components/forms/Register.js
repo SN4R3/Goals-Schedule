@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 export default class Register extends Component {
   constructor() {
@@ -9,8 +10,9 @@ export default class Register extends Component {
       name: "Matt",
       email: "mattf1993@hotmail.com",
       password: "password1234",
-      conf_password: "",
+      conf_password: "password1234",
       error: false,
+      errMsg: "",
       loading: false,
       showPassword: false,
       showConfPassword: false
@@ -40,9 +42,22 @@ export default class Register extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.setState({ error: !this.form.current.reportValidity() });
-    if(!this.state.error) {
-      this.setState({ loading: true })
+    this.setState({ error: !this.form.current.reportValidity(), errMsg: '' });
+
+    if (!this.state.error) {
+      this.setState({ loading: true });
+      const { name, email, password } = this.state;
+      axios.post("/api/register", { name, email, password }).then(res => {
+        if (res.data.error) {
+          this.setState({ loading: false, errMsg: res.data.message });
+        } else {
+          this.props.userLoggedIn({name:res.data.name,email:res.data.email})
+        }
+      });
+    } else {
+      this.setState({
+        errMsg: " Oops! There is something wrong with the form."
+      });
     }
   }
 
@@ -114,40 +129,40 @@ export default class Register extends Component {
           <label htmlFor="conf_password">
             Confirm Password <strong style={{ color: "red" }}>*</strong>
           </label>
-          <div style={{display:'flex'}}>
-          <input
-            type={`${this.state.showConfPassword ? "text" : "password"}`}
-            name="conf_password"
-            ref={this.conf_password}
-            minLength="8"
-            maxLength="255"
-            required
-            className="form-control"
-            value={this.state.conf_password}
-            onChange={this.handleChange}
-          />
-          <div style={passwordCheck}>
+          <div style={{ display: "flex" }}>
             <input
-              type="checkbox"
-              name="showConfPassword"
-              checked={this.state.showConfPassword}
+              type={`${this.state.showConfPassword ? "text" : "password"}`}
+              name="conf_password"
+              ref={this.conf_password}
+              minLength="8"
+              maxLength="255"
+              required
+              className="form-control"
+              value={this.state.conf_password}
               onChange={this.handleChange}
             />
-            <i className="fa fa-eye ml-1"></i>
-          </div>
+            <div style={passwordCheck}>
+              <input
+                type="checkbox"
+                name="showConfPassword"
+                checked={this.state.showConfPassword}
+                onChange={this.handleChange}
+              />
+              <i className="fa fa-eye ml-1"></i>
+            </div>
           </div>
 
           <br />
           {/* Error Message */}
           <div
             className={`alert alert-danger ${
-              this.state.error ? "d-block" : "d-none"
+              this.state.errMsg.length ? "d-block" : "d-none"
             }`}
           >
-            <p>
+            <p className="mb-0">
               <strong>
-                <i className="fas fa-exclamation-circle"></i> Oops! There is
-                something wrong with the form.
+                <i className="fas fa-exclamation-circle"></i>{" "}
+                {this.state.errMsg}
               </strong>
             </p>
           </div>
@@ -156,7 +171,6 @@ export default class Register extends Component {
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={this.validate}
               disabled={this.state.loading ? true : false}
             >
               Register
