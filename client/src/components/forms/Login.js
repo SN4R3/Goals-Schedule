@@ -24,7 +24,7 @@ export default class Login extends Component {
           this.setState({errMsg: res.data.message});
         } else {
           this.props.hideLogin()
-          this.props.userLoggedIn(res.data[0])
+          window.location.href = '/dashboard'
         }
       })
     } else {

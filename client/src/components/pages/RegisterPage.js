@@ -8,7 +8,7 @@ export class RegisterPage extends Component {
       <div>
         <h2 className="text-center">Sign Up Page</h2>
         <div className="col-xs-12 col-lg-8 offset-lg-2">
-          <Register userLoggedIn={(user) => this.props.userLoggedIn(user)}/>
+          <Register/>
         </div>
       </div>
     )

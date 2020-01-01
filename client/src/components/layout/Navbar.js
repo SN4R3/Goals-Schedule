@@ -2,20 +2,15 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Login from "../forms/Login";
 import "./Navbar.css";
+import axios from "axios";
 
 export default class Navbar extends Component {
   constructor(props) {
     super(props);
-    this.state = { menuToggled: false, loginToggled: false, user: null };
+    this.state = { menuToggled: false, loginToggled: false };
 
     this.handleToggle = this.handleToggle.bind(this);
     this.hideLogin = this.hideLogin.bind(this);
-    this.userLoggedIn = this.userLoggedIn.bind(this);
-  }
-
-  userLoggedIn(user) {
-    this.setState({ user });
-    this.props.userLoggedIn(user);
   }
 
   handleToggle(e) {
@@ -52,15 +47,12 @@ export default class Navbar extends Component {
           style={{ zIndex: "1" }}
           className={this.state.loginToggled ? "d-block" : "d-none"}
         >
-          <Login
-            userLoggedIn={user => this.userLoggedIn(user)}
-            hideLogin={this.hideLogin}
-          />
+          <Login hideLogin={this.hideLogin} />
         </div>
       </React.Fragment>
     );
 
-    if (this.state.user) {
+    if (this.props.user) {
       userButtons = (
         <React.Fragment>
           <Link to="/dashboard">
@@ -68,7 +60,14 @@ export default class Navbar extends Component {
               <i className="fas fa-user-circle"></i> My Dashboard
             </button>
           </Link>
-          <button className="btn btn-danger">
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              axios.get("/api/auth/logout").then(res => {
+                window.location.href = '/';
+              });
+            }}
+          >
             <i className="fas fa-sign-out-alt"></i> Sign Out
           </button>
         </React.Fragment>

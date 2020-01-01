@@ -1,57 +1,59 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
-} from 'react-router-dom'
-import './App.css';
+  Redirect
+} from "react-router-dom";
+import axios from "axios";
+import "./App.css";
 
-import NavBar from './components/layout/Navbar'
-
-import RegisterPage from './components/pages/RegisterPage'
-import DashboardPage from './components/pages/User/DashboardPage'
+import NavBar from "./components/layout/Navbar";
+import RegisterPage from "./components/pages/RegisterPage";
+import DashboardPage from "./components/pages/User/DashboardPage";
 
 class App extends Component {
   constructor() {
-    super()
-    this.state = { user: null }
+    super();
+    this.state = { user: null, loaded: false };
   }
 
-  userLoggedIn(user, history) {
-    this.setState({user}); 
-    history.push('/dashboard');
+  componentDidMount() {
+    //fetch user
+    axios.get("/api/auth/user").then(res => {
+      this.setState({ user: res.data, loaded: true });
+    });
   }
 
   render() {
-    const user = this.state.user
-    let dashboardPage = <DashboardPage user={user}/>
-    if(!user) {
-      dashboardPage = <p>Nope</p>
+    const { user, loaded } = this.state;
+    let pages = <React.Fragment></React.Fragment>;
+    let dashboardPage = <DashboardPage user={user} />;
+    if (!user) {
+      dashboardPage = <Redirect to={{ pathname: "/login" }} />;
+    }
+    if (loaded) {
+      pages = (
+        <Switch>
+          <Route path="/register">
+            <RegisterPage />
+          </Route>
+          <Route path="/dashboard">{dashboardPage}</Route>
+          <Route path="/">
+            <h2 className="text-center">Home Page</h2>
+          </Route>
+        </Switch>
+      );
     }
 
     return (
       <Router>
-        <div style={{minHeight:"80vh"}}>
-          <Route render={({ history }) => (
-            <NavBar userLoggedIn={(user) =>  this.userLoggedIn(user, history)}/>
-          )}/>
-          <div className="container mt-4 mb-4">
-            <Switch>
-              <Route path="/register" render={({ history }) => (
-                <RegisterPage userLoggedIn={(user) =>  this.userLoggedIn(user, history)}/>
-              )}/>
-              <Route path="/dashboard">
-                {dashboardPage}
-              </Route>
-              <Route path="/">
-                <h2 className="text-center">Home Page</h2>
-              </Route>
-            </Switch>
-          </div>
+        <div style={{ minHeight: "80vh" }}>
+          <NavBar user={user} />
+          <div className="container mt-4 mb-4">{pages}</div>
         </div>
       </Router>
-    )
-
+    );
   }
 }
 

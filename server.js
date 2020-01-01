@@ -1,12 +1,25 @@
 const express = require("express");
 const app = express();
 const connection = require("./connection");
-
-const moment = require("moment");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
-
 const bodyParser = require("body-parser");
+const helmet = require("helmet");
+
+const sessions = require("client-sessions");
+const auth = require("./routes/auth");
+const pureify = require("./middleware/pureify");
+
+//Middleware
+app.use(
+  sessions({
+    cookieName: "session",
+    secret: "wwofdasd9432i423ijfs",
+    duration: 30 * 60 * 1000,
+    httpOnly: true
+  })
+);
+
+app.use(helmet());
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -14,54 +27,32 @@ app.use(
   })
 );
 
-const auth = require("./routes/auth");
-const pureify = require("./middleware/pureify");
-
-//Middleware
 app.use(pureify);
 
-//Routes
-app.use("/api/auth", auth);
-
-app.post("/api/register", (req, res) => {
-  const { name, email, password } = req.body;
-  // check if email exists
+// Authenticate
+app.use((req, res, next) => {
+  if (!(req.session && req.session.userId)) {
+    return next();
+  }
   connection.query(
-    `SELECT * FROM users WHERE email = ?`,
-    [email],
-    (err, rows) => {
-      //if (err) json({error: '500', message: `User Check Error`})
-      if (err) throw err;
-      if (rows.length) {
-        res.json({
-          error: "23000",
-          message: `Email '${email}' is already in use.`
-        });
-      } else {
-        // Hash password
-        bcrypt.hash(password, saltRounds, function(err, hash) {
-          //if (err) json({error: '500', message: `Password Error`})
-          if (err) throw err;
-          // Store User
-          let query = `
-          INSERT INTO users (name, email, password, created_at)
-          VALUES(?,?,?,?);
-        `;
-          connection.query(
-            query,
-            [name, email, hash, moment().format()],
-            err => {
-              //if (err) json({error: '500', message: `Registration Error`})
-              if (err) throw err;
-              // TODO Log user in
-              res.json({ name, email });
-            }
-          );
-        });
+    `SELECT * FROM users WHERE id = ?`,
+    [req.session.userId],
+    (err, user) => {
+      if (err) throw error;
+      if (!user[0]) {
+        return next();
       }
+      user.password = undefined;
+      req.user = user[0];
+      res.locals.user = user[0];
+
+      next();
     }
   );
 });
+
+//Routes
+app.use("/api/auth", auth);
 
 const port = 5000;
 

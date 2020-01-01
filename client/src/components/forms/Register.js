@@ -47,11 +47,12 @@ export default class Register extends Component {
     if (!this.state.error) {
       this.setState({ loading: true });
       const { name, email, password } = this.state;
-      axios.post("/api/register", { name, email, password }).then(res => {
+      axios.post("/api/auth/register", { name, email, password }).then(res => {
         if (res.data.error) {
           this.setState({ loading: false, errMsg: res.data.message });
         } else {
-          this.props.userLoggedIn({name:res.data.name,email:res.data.email})
+          //redirect to login
+          window.location.href = '/login'
         }
       });
     } else {
