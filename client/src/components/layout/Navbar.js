@@ -29,7 +29,7 @@ export default class Navbar extends Component {
     let userButtons = (
       <React.Fragment>
         <button
-          className="btn btn-light"
+          className="btn btn-light btn-sm"
           id="loginToggled"
           onClick={e => {
             this.handleToggle(e);
@@ -38,7 +38,7 @@ export default class Navbar extends Component {
           <i className="fas fa-key"></i> Login
         </button>
         <Link to="/register">
-          <button className="btn btn-secondary">
+          <button className="btn btn-secondary btn-sm">
             <i className="fas fa-edit"></i> Sign Up
           </button>
         </Link>
@@ -56,12 +56,12 @@ export default class Navbar extends Component {
       userButtons = (
         <React.Fragment>
           <Link to="/dashboard">
-            <button className="btn btn-primary">
+            <button className="btn btn-primary btn-sm">
               <i className="fas fa-user-circle"></i> My Dashboard
             </button>
           </Link>
           <button
-            className="btn btn-danger"
+            className="btn btn-danger btn-sm"
             onClick={() => {
               axios.get("/api/auth/logout").then(res => {
                 window.location.href = '/';

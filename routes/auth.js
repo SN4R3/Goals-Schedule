@@ -3,7 +3,6 @@ const router = express.Router();
 const connection = require("../connection");
 
 const uuid = require('uuid/v4')
-const moment = require("moment");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -28,12 +27,12 @@ router.post("/register", (req, res) => {
           if (err) throw err;
           // Store User
           let query = `
-          INSERT INTO users (id, name, email, password, created_at)
-          VALUES(?,?,?,?,?);
+          INSERT INTO users (id, name, email, password)
+          VALUES(?,?,?,?);
         `;
           connection.query(
             query,
-            [uuid(), name, email, hash, moment().format()],
+            [uuid(), name, email, hash],
             err => {
               //if (err) json({error: '500', message: `Registration Error`})
               if (err) throw err;

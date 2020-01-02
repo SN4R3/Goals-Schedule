@@ -2,11 +2,14 @@ const express = require("express");
 const app = express();
 const connection = require("./connection");
 const bodyParser = require("body-parser");
-const helmet = require("helmet");
 
+const helmet = require("helmet");
 const sessions = require("client-sessions");
-const auth = require("./routes/auth");
 const pureify = require("./middleware/pureify");
+
+const auth = require('./routes/auth');
+const goal = require('./routes/goal')
+const category = require('./routes/category')
 
 //Middleware
 app.use(
@@ -52,8 +55,9 @@ app.use((req, res, next) => {
 });
 
 //Routes
-app.use("/api/auth", auth);
-
+app.use('/api/auth', auth);
+app.use('/api/goal', goal);
+app.use('/api/category', category)
 const port = 5000;
 
 app.listen(port, () => `Server running on port ${port}`);
