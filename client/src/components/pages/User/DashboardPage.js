@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Route, Switch, Link } from "react-router-dom";
 import axios from "axios";
 
-import NewGoalPage from './NewGoalPage'
+import NewGoalPage from "./NewGoalPage";
 
 export class DashboardPage extends Component {
   constructor() {
@@ -15,6 +15,7 @@ export class DashboardPage extends Component {
     this.form = React.createRef();
     this.handleChange = this.handleChange.bind(this);
     this.submitCategory = this.submitCategory.bind(this);
+    this.deleteSelectedCategory = this.deleteSelectedCategory.bind(this);
   }
 
   componentDidMount() {
@@ -101,39 +102,35 @@ export class DashboardPage extends Component {
 
   renderGoals() {
     const { categories, selectedCat } = this.state;
-    if (!categories.length) return <li>Nothing to show!</li>;
+    if (!categories.length) return <p>Nothing to show!</p>;
     else {
       let result;
       if (selectedCat) {
-        let cat = categories.filter(c => {
-          return Number(selectedCat) === c.id;
-        })[0];
-        result = (
-          <li key={`cat${cat.id}`}>
-            {cat.name}
-            {cat.goals.map(goal => (
-              <li key={`goal${goal.id}`}>{goal.name}</li>
-            ))}
-            <Link to="/dashboard/new-goal">
-              New Goal
-            </Link>
-          </li>
-        );
+        let cat = this.getSelectedCat()
+        result = cat.goals.map(goal => (
+          <li style={goalListItem} key={`goal${goal.id}`}>{goal.name}</li>
+        ));
       } else {
-        result = (categories.map(cat => (
-          <li key={`cat${cat.id}`}>
-            {cat.name}
-            {cat.goals.map(goal => (
-              <li key={`goal${goal.id}`}>{goal.name}</li>
-            ))}
-            <Link to="/dashboard/new-goal" onClick={() => this.setState({selectedCat: cat.id})}>
-               New Goal
-            </Link>
-          </li>
-        )));
+        result = categories.map(cat =>
+          cat.goals.map(goal => <li style={goalListItem} key={`goal${goal.id}`}>{goal.name}</li>)
+        );
       }
-      return result;
+      return result.length ? result : <p>Nothing to show!</p>;
     }
+  }
+
+  deleteSelectedCategory() {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${this.getSelectedCat().name}? All it's Goals & Milestones will also be deleted.`
+    );
+    if (confirmed) {
+    }
+  }
+
+  getSelectedCat() {
+    return this.state.categories.filter(c => {
+      return Number(this.state.selectedCat) === c.id;
+    })[0];
   }
 
   render() {
@@ -145,8 +142,8 @@ export class DashboardPage extends Component {
     ));
     return (
       <div>
-        {this.renderNewCategoryForm()}
         <Switch>
+          {/* New Goal */}
           <Route path="/dashboard/new-goal">
             <NewGoalPage
               category={
@@ -156,7 +153,10 @@ export class DashboardPage extends Component {
               }
             />
           </Route>
+          {/* 'Home' */}
           <Route path="/">
+          <h2>My Dashboard</h2>
+            {this.renderNewCategoryForm()}
             <div className="input-group mb-3">
               <select
                 name="selectedCat"
@@ -170,12 +170,44 @@ export class DashboardPage extends Component {
                 {this.renderNewCategoryBtn()}
               </div>
             </div>
-            <ul>{this.renderGoals()}</ul>
+            <div className="mt-4 mb-4">
+              <div
+                className={`text-right ${
+                  this.state.categories.length ? "" : "d-none"
+                }`}
+              >
+                <Link to="/dashboard/new-goal">
+                  <button className="btn btn-info">
+                    <i className="fa fa-plus"></i> New Goal
+                  </button>
+                </Link>
+                <button
+                  className={`btn btn-danger ml-2 ${
+                    this.state.selectedCat ? "" : "d-none"
+                  }`}
+                  onClick={this.deleteSelectedCategory}
+                >
+                  <i className="fa fa-minus-circle"></i> Delete Category
+                </button>
+              </div>
+              {/* Goals List */}
+                <h3>My Goals {this.state.selectedCat ? `for ${this.getSelectedCat().name}` : ''}</h3>
+              <ul className="mt-4 mb-4" style={goalsList}>{this.renderGoals()}</ul>
+            </div>
           </Route>
         </Switch>
       </div>
     );
   }
+}
+
+const goalsList = {
+  listStyleType: 'none'
+}
+
+const goalListItem = {
+  backgroundColor: '#f1f1f1',
+  padding: '10px',
 }
 
 export default DashboardPage;

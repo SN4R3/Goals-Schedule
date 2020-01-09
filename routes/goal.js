@@ -3,8 +3,17 @@ const router = express.Router();
 const connection = require("../connection");
 
 router.post("/", (req, res) => {
-  const { name, category_id, description, target, unit, deadline, status } = req.body;
-  let query = `
+  let {
+    name,
+    category_id,
+    description,
+    target,
+    unit,
+    deadline,
+    status,
+    milestones
+  } = req.body;
+  const query = `
     INSERT INTO goals (name, category_id, description, target, unit, deadline, status)
     VALUES (?,?,?,?,?,?,?)
   `;
@@ -18,7 +27,50 @@ router.post("/", (req, res) => {
         [result.insertId],
         (err, rows) => {
           if (err) throw err;
-          res.json(rows[0]);
+          let goal = rows[0];
+          milestones = JSON.parse(milestones)
+          if (milestones.length) {
+            // store milestone(s)
+            let outstanding = milestones.length;
+            const goal_id = result.insertId;
+
+            milestones.forEach(milestone => {
+              const {
+                name,
+                description,
+                target,
+                unit,
+                deadline,
+                status
+              } = milestone;
+              const query = `
+                INSERT INTO milestones (goal_id, name, description, target, unit, deadline, status)
+                VALUES (?,?,?,?,?,?,?)
+              `;
+              connection.query(
+                query,
+                [goal_id, name, description, target, unit, deadline, status],
+                (err, result) => {
+                  if (err) throw err;
+
+                  outstanding--;
+                  if (!outstanding) {
+                    //return stored goal with stored milestones
+                    connection.query(
+                      `SELECT * FROM milestones WHERE goal_id = ?`,
+                      [goal_id],
+                      (err, rows) => {
+                        goal.milestones = rows;
+                        res.json(goal);
+                      }
+                    );
+                  }
+                }
+              );
+            });
+          } else {
+            res.json(goal);
+          }
         }
       );
     }

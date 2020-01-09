@@ -5,6 +5,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
+import NewMilestone from "./NewMilestone";
+
 export default class NewGoal extends Component {
   constructor(props) {
     super(props);
@@ -16,23 +18,28 @@ export default class NewGoal extends Component {
       target: "5000",
       unit: "$",
       deadline: new Date(),
-      status: "Not Started"
+      status: "Not Started",
+      milestones: [],
+      newMilestone: false
     };
+
     this.form = React.createRef();
     this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
+    this.addMilestone = this.addMilestone.bind(this);
   }
 
-  handleChange(e) {
-    if (e instanceof Date) this.setState({ deadline: e });
-    else this.setState({ [e.target.name]: e.target.value });
-  }
   componentDidMount() {
     axios.get("/api/goal/all/withCategories").then(res => {
       this.setState({ categories: res.data });
       if (!this.state.category_id)
         this.setState({ category_id: res.data[0].id });
     });
+  }
+
+  handleChange(e) {
+    if (e instanceof Date) this.setState({ deadline: e });
+    else this.setState({ [e.target.name]: e.target.value });
   }
 
   submitForm(e) {
@@ -44,7 +51,8 @@ export default class NewGoal extends Component {
       unit,
       description,
       deadline,
-      status
+      status,
+      milestones
     } = this.state;
     if (this.form.current.reportValidity()) {
       axios
@@ -55,12 +63,26 @@ export default class NewGoal extends Component {
           unit,
           description,
           deadline: moment(deadline).format(),
-          status
+          status,
+          milestones: JSON.stringify(milestones)
         })
         .then(res => {
           window.location.href = "/dashboard";
         });
     }
+  }
+
+  addMilestone(milestone) {
+    this.setState({
+      milestones: [...this.state.milestones, milestone],
+      newMilestone: false
+    });
+  }
+
+  removeMilestone(i) {
+    let milestones = this.state.milestones;
+    milestones.splice(i, 1);
+    this.setState({ milestones });
   }
 
   render() {
@@ -144,6 +166,7 @@ export default class NewGoal extends Component {
               className="form-control"
             />
           </div>
+          {/* Status */}
           <label htmlFor="status">Status</label>
           <select
             name="status"
@@ -155,9 +178,41 @@ export default class NewGoal extends Component {
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
+          <hr />
+          <h4>Milestones</h4>
+          {/* New Milestones */}
+          <ul>
+            {this.state.milestones.map((milestone, i) => (
+              <li key={`milestone-${i}`}>
+                {milestone.name} -{" "}
+                <i
+                  className="fas fa-minus-circle"
+                  style={{ color: "#bd2130" }}
+                  onClick={() => this.removeMilestone(i)}
+                ></i>
+              </li>
+            ))}
+          </ul>
+
+          {/* New Milestone */}
+          <div
+            onClick={() => this.setState({ newMilestone: true })}
+            className={`mb-4 btn btn-sm btn-secondary ${
+              this.state.newMilestone ? "d-none" : "m-4"
+            }`}
+          >
+            Add New Milestone
+          </div>
+          <div
+            style={newMilestone}
+            className={`${this.state.newMilestone ? "p-4" : "d-none"}`}
+          >
+            <NewMilestone addMilestone={this.addMilestone} />
+          </div>
+          <hr />
           <div className="text-center">
             <button type="submit" className="btn btn-success">
-              Submit
+              Submit Goal
             </button>
           </div>
         </form>
@@ -165,3 +220,8 @@ export default class NewGoal extends Component {
     );
   }
 }
+
+const newMilestone = {
+  backgroundColor: "#f1f1f1",
+  borderRadius: "5px"
+};
