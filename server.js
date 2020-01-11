@@ -58,6 +58,6 @@ app.use((req, res, next) => {
 app.use('/api/auth', auth);
 app.use('/api/goal', goal);
 app.use('/api/category', category)
-const port = 5000;
 
+const port = 5000;
 app.listen(port, () => `Server running on port ${port}`);

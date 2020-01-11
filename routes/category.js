@@ -20,4 +20,16 @@ router.post("/", (req, res) => {
   );
 });
 
+router.delete("/:id", (req, res) => {
+  connection.query(
+    `DELETE FROM categories WHERE id = ?`,
+    [req.params.id],
+    (err, result) => {
+      if (err) throw err;
+      if (result.affectedRows > 0) res.sendStatus(200);
+      else res.sendStatus(500);
+    }
+  );
+});
+
 module.exports = router;

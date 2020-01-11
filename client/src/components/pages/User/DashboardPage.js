@@ -19,7 +19,7 @@ export class DashboardPage extends Component {
   }
 
   componentDidMount() {
-    axios.get("/api/goal/all/withCategories").then(res => {
+    axios.get("/api/goal/user").then(res => {
       this.setState({ categories: res.data });
     });
   }
@@ -106,24 +106,67 @@ export class DashboardPage extends Component {
     else {
       let result;
       if (selectedCat) {
-        let cat = this.getSelectedCat()
+        let cat = this.getSelectedCat();
         result = cat.goals.map(goal => (
-          <li style={goalListItem} key={`goal${goal.id}`}>{goal.name}</li>
+          <li style={goalListItem} key={`goal${goal.id}`}>
+            {goal.name}{" "}
+            <a className="btn btn-danger" onClick={() => this.deleteGoal(goal)}>
+              Delete
+            </a>
+            {goal.milestones.length
+              ? this.renderMilestones(goal.milestones)
+              : ""}
+          </li>
         ));
       } else {
         result = categories.map(cat =>
-          cat.goals.map(goal => <li style={goalListItem} key={`goal${goal.id}`}>{goal.name}</li>)
+          cat.goals.map(goal => (
+            <li style={goalListItem} key={`goal${goal.id}`}>
+              {goal.name}{" "}
+              <a
+                className="btn btn-danger"
+                onClick={() => this.deleteGoal(goal)}
+              >
+                Delete
+              </a>
+              {goal.milestones.length
+                ? this.renderMilestones(goal.milestones)
+                : ""}
+            </li>
+          ))
         );
       }
       return result.length ? result : <p>Nothing to show!</p>;
     }
   }
 
+  renderMilestones(milestones) {
+    return (
+      <ul>
+        {milestones.map(ms => (
+          <li style={msListItem} key={`ms${ms.id}`}>
+            {ms.name} <a className="btn btn-danger">Delete</a>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   deleteSelectedCategory() {
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${this.getSelectedCat().name}? All it's Goals & Milestones will also be deleted.`
+      `Are you sure you want to delete ${
+        this.getSelectedCat().name
+      }? All it's Goals & Milestones will also be deleted.`
     );
     if (confirmed) {
+      axios.delete(`/api/category/${this.state.selectedCat}`).then(res => {
+        this.setState({
+          categories: this.state.categories.filter(
+            cat => Number(this.state.selectedCat) !== cat.id
+          ),
+          selectedCat: ""
+        });
+      });
     }
   }
 
@@ -131,6 +174,14 @@ export class DashboardPage extends Component {
     return this.state.categories.filter(c => {
       return Number(this.state.selectedCat) === c.id;
     })[0];
+  }
+
+  deleteGoal(goal) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${goal.name}? All it's Milestones will also be deleted.`
+    );
+    if (confirmed) {
+    }
   }
 
   render() {
@@ -155,7 +206,7 @@ export class DashboardPage extends Component {
           </Route>
           {/* 'Home' */}
           <Route path="/">
-          <h2>My Dashboard</h2>
+            <h2>My Dashboard</h2>
             {this.renderNewCategoryForm()}
             <div className="input-group mb-3">
               <select
@@ -185,14 +236,21 @@ export class DashboardPage extends Component {
                   className={`btn btn-danger ml-2 ${
                     this.state.selectedCat ? "" : "d-none"
                   }`}
-                  onClick={this.deleteSelectedCategory}
+                  onClick={() => this.deleteSelectedCategory()}
                 >
                   <i className="fa fa-minus-circle"></i> Delete Category
                 </button>
               </div>
               {/* Goals List */}
-                <h3>My Goals {this.state.selectedCat ? `for ${this.getSelectedCat().name}` : ''}</h3>
-              <ul className="mt-4 mb-4" style={goalsList}>{this.renderGoals()}</ul>
+              <h3>
+                My Goals{" "}
+                {this.state.selectedCat
+                  ? `for ${this.getSelectedCat().name}`
+                  : ""}
+              </h3>
+              <ul className="mt-4 mb-4" style={goalsList}>
+                {this.renderGoals()}
+              </ul>
             </div>
           </Route>
         </Switch>
@@ -202,12 +260,17 @@ export class DashboardPage extends Component {
 }
 
 const goalsList = {
-  listStyleType: 'none'
-}
+  listStyleType: "none"
+};
 
 const goalListItem = {
-  backgroundColor: '#f1f1f1',
-  padding: '10px',
-}
+  backgroundColor: "#f1f1f1",
+  padding: "10px"
+};
 
+const msListItem = {
+  backgroundColor: "#f1f1f1",
+  padding: "10px",
+  paddingLeft:"15px",
+}
 export default DashboardPage;
