@@ -1,8 +1,12 @@
 import React, { Component } from "react";
-import { Route, Switch, Link } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
+import './Dashboard.css'
 import axios from "axios";
+import { AnimatedSwitch, spring } from "react-router-transition";
 
 import NewGoalPage from "./NewGoalPage";
+import NewCategory from "../../forms/NewCategory";
+import GoalsList from '../../common/GoalsList'
 
 export class DashboardPage extends Component {
   constructor() {
@@ -10,11 +14,9 @@ export class DashboardPage extends Component {
     this.state = {
       categories: [],
       selectedCat: "",
-      newCategoryName: null
+      creatingCategory: false
     };
-    this.form = React.createRef();
     this.handleChange = this.handleChange.bind(this);
-    this.submitCategory = this.submitCategory.bind(this);
     this.deleteSelectedCategory = this.deleteSelectedCategory.bind(this);
   }
 
@@ -24,74 +26,32 @@ export class DashboardPage extends Component {
     });
   }
 
+  //router transitions
+  mapStyles(styles) {
+    return {
+      opacity: styles.opacity,
+      transform: `translateY(${styles.translateY}%)`
+    };
+  }
+  bounce(val) {
+    return spring(val, {
+      stiffness: 330,
+      damping: 22
+    });
+  }
+
   handleChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  submitCategory(e) {
-    e.preventDefault();
-    if (this.form.current.reportValidity()) {
-      axios
-        .post("/api/category", { name: this.state.newCategoryName })
-        .then(res => {
-          res.data.goals = [];
-          this.setState({
-            categories: [...this.state.categories, res.data],
-            newCategoryName: null,
-            selectedCat: res.data.id
-          });
-        });
-    }
-  }
-
-  renderNewCategoryForm() {
-    if (this.state.newCategoryName !== null) {
-      return (
-        <form ref={this.form} onSubmit={this.submitCategory}>
-          <label htmlFor="name">
-            Category <span style={{ color: "red" }}>*</span>
-          </label>
-          <div className="input-group mt-2 mb-2">
-            <input
-              type="text"
-              name="newCategoryName"
-              value={this.state.newCategoryName}
-              onChange={this.handleChange}
-              minLength="2"
-              maxLength="255"
-              required
-              className="form-control"
-            />
-            <div className="input-group-append">
-              <button className="btn btn-success btn-sm">
-                <i className="fa fa-plus"></i> Add
-              </button>
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => {
-                  this.setState({ newCategoryName: null });
-                }}
-              >
-                <i className="fa fa-times"></i> Cancel
-              </button>
-            </div>
-          </div>
-        </form>
-      );
-    } else {
-      return <React.Fragment></React.Fragment>;
-    }
-  }
-
   renderNewCategoryBtn() {
-    if (this.state.newCategoryName !== null) {
+    if (this.state.creatingCategory) {
       return <React.Fragment></React.Fragment>;
     } else {
       return (
-        <button
-          className="btn btn-success btn-sm"
-          onClick={() => {
-            this.setState({ newCategoryName: "" });
+        <button 
+          className="btn btn-success btn-sm" onClick={() => {
+            this.setState({ creatingCategory: true });
           }}
         >
           <i className="fa fa-plus"></i> New Category
@@ -100,65 +60,19 @@ export class DashboardPage extends Component {
     }
   }
 
-  renderGoals() {
-    const { categories, selectedCat } = this.state;
-    if (!categories.length) return <p>Nothing to show!</p>;
-    else {
-      let result;
-      if (selectedCat) {
-        let cat = this.getSelectedCat();
-        result = cat.goals.map(goal => (
-          <li style={goalListItem} key={`goal${goal.id}`}>
-            {goal.name}{" "}
-            <a className="btn btn-danger" onClick={() => this.deleteGoal(goal)}>
-              Delete
-            </a>
-            {goal.milestones.length
-              ? this.renderMilestones(goal.milestones)
-              : ""}
-          </li>
-        ));
-      } else {
-        result = categories.map(cat =>
-          cat.goals.map(goal => (
-            <li style={goalListItem} key={`goal${goal.id}`}>
-              {goal.name}{" "}
-              <a
-                className="btn btn-danger"
-                onClick={() => this.deleteGoal(goal)}
-              >
-                Delete
-              </a>
-              {goal.milestones.length
-                ? this.renderMilestones(goal.milestones)
-                : ""}
-            </li>
-          ))
-        );
-      }
-      return result.length ? result : <p>Nothing to show!</p>;
-    }
-  }
-
-  renderMilestones(milestones) {
-    return (
-      <ul>
-        {milestones.map(ms => (
-          <li style={msListItem} key={`ms${ms.id}`}>
-            {ms.name} <a className="btn btn-danger">Delete</a>
-          </li>
-        ))}
-      </ul>
-    );
+  categoryCreated(cat) {
+    this.setState({
+      categories: [...this.state.categories, cat],
+      creatingCategory: false,
+      selectedCat: cat.id
+    });
   }
 
   deleteSelectedCategory() {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${
-        this.getSelectedCat().name
-      }? All it's Goals & Milestones will also be deleted.`
-    );
-    if (confirmed) {
+    let msg = `Are you sure you want to delete ${this.getSelectedCat().name}? 
+      All it's Goals & Milestones will also be deleted.`
+
+    if (window.confirm(msg)) {
       axios.delete(`/api/category/${this.state.selectedCat}`).then(res => {
         this.setState({
           categories: this.state.categories.filter(
@@ -176,16 +90,20 @@ export class DashboardPage extends Component {
     })[0];
   }
 
-  deleteGoal(goal) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${goal.name}? All it's Milestones will also be deleted.`
-    );
-    if (confirmed) {
+  getGoalsForViewing() {
+    let res = []
+    if(this.state.selectedCat) {
+      return this.getSelectedCat().goals
+    } else {
+      this.state.categories.forEach((cat) => {
+        res = res.concat(cat.goals)
+      })
+      return res
     }
   }
 
   render() {
-    const { categories, selectedCat } = this.state;
+    const { categories, selectedCat, creatingCategory } = this.state;
     let catOptions = categories.map(cat => (
       <option key={`catopt${cat.id}`} value={cat.id}>
         {cat.name}
@@ -193,84 +111,87 @@ export class DashboardPage extends Component {
     ));
     return (
       <div>
-        <Switch>
+        <AnimatedSwitch
+          atEnter={{
+            opacity: 0,
+            translateY: 15
+          }}
+          atLeave={{ opacity: this.bounce(0), translateY: 15 }}
+          atActive={{ opacity: this.bounce(1), translateY: 0 }}
+          mapStyles={this.mapStyles}
+          className="switch-wrapper"
+        >
           {/* New Goal */}
           <Route path="/dashboard/new-goal">
-            <NewGoalPage
-              category={
-                categories.filter(c => {
-                  return c.id === Number(selectedCat);
-                })[0]
-              }
-            />
+            <NewGoalPage category={this.getSelectedCat()}/>
           </Route>
           {/* 'Home' */}
           <Route path="/">
-            <h2>My Dashboard</h2>
-            {this.renderNewCategoryForm()}
-            <div className="input-group mb-3">
-              <select
-                name="selectedCat"
-                className="custom-select"
-                value={this.state.selectedCat}
-                onChange={this.handleChange}
-              >
-                <option value="">All Categories</option>;{catOptions}
-              </select>
-              <div className="input-group-append">
-                {this.renderNewCategoryBtn()}
-              </div>
-            </div>
-            <div className="mt-4 mb-4">
-              <div
-                className={`text-right ${
-                  this.state.categories.length ? "" : "d-none"
-                }`}
-              >
-                <Link to="/dashboard/new-goal">
-                  <button className="btn btn-info">
-                    <i className="fa fa-plus"></i> New Goal
-                  </button>
-                </Link>
-                <button
-                  className={`btn btn-danger ml-2 ${
-                    this.state.selectedCat ? "" : "d-none"
-                  }`}
-                  onClick={() => this.deleteSelectedCategory()}
-                >
-                  <i className="fa fa-minus-circle"></i> Delete Category
+            <div className="d-flex justify-content-between align-items-center border title-container">
+              <h1>
+                <i className="fas fa-tachometer-alt"></i>
+                <span className="ml-2">Dashboard</span>
+              </h1>
+              <div className="d-none d-sm-block">
+                <button className="btn btn-dark">
+                  <i className="fa fa-user"></i>
+                  <span className="ml-1">Profile</span>
                 </button>
               </div>
-              {/* Goals List */}
-              <h3>
-                My Goals{" "}
-                {this.state.selectedCat
-                  ? `for ${this.getSelectedCat().name}`
-                  : ""}
-              </h3>
-              <ul className="mt-4 mb-4" style={goalsList}>
-                {this.renderGoals()}
-              </ul>
+            </div>
+            <div className="mt-4">
+              <div className={!creatingCategory ? 'd-none' : ''}>
+                <NewCategory
+                  catCrearted={this.addNewCategory}
+                  cancelNewCategory={() =>
+                    this.setState({ creatingCategory: false })
+                  }
+                />
+              </div>
+              
+              <div className="input-group mb-3">
+                <select
+                  name="selectedCat"
+                  className={`custom-select ${creatingCategory ? "d-none" : ""}`}
+                  value={this.state.selectedCat}
+                  onChange={this.handleChange}
+                >
+                  <option value="">All Categories</option>;{catOptions}
+                </select>
+                <div className="input-group-append">
+                  {this.renderNewCategoryBtn()}
+                </div>
+              </div>
+              <div className="mt-4 mb-4">
+                <div className={`d-flex justify-content-end my-2 ${this.state.categories.length ? "" : "d-none"}`}>
+                  <div className={`${!selectedCat ? 'd-none' : ''}`}>
+                    <Link to="/dashboard/new-goal">
+                      <button className="btn btn-info">
+                        <i className="fa fa-plus"></i> New Goal
+                      </button>
+                    </Link>
+                  </div>
+                  <button
+                    className={`btn btn-danger ml-2 ${this.state.selectedCat ? "" : "d-none"}`}
+                    onClick={() => this.deleteSelectedCategory()}
+                  >
+                    <i className="fa fa-minus-circle"></i> Delete Category
+                  </button>
+                </div>
+                  
+                <h3>
+                  {this.state.selectedCat ? `${this.getSelectedCat().name} Goals` : ""}
+                </h3>
+                <div className="mt-4 mb-4">
+                  <GoalsList goals={this.getGoalsForViewing()}/>
+                </div>
+              </div>
             </div>
           </Route>
-        </Switch>
+        </AnimatedSwitch>
       </div>
     );
   }
 }
 
-const goalsList = {
-  listStyleType: "none"
-};
-
-const goalListItem = {
-  backgroundColor: "#f1f1f1",
-  padding: "10px"
-};
-
-const msListItem = {
-  backgroundColor: "#f1f1f1",
-  padding: "10px",
-  paddingLeft:"15px",
-}
 export default DashboardPage;

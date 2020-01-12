@@ -9,7 +9,7 @@
 
 .navbarContainer {
   background-color: #fbfbfb;
-  border-bottom:2px solid whitesmoke;
+  border-bottom:2px solid #eaeaea;
   padding: 5px;
   display: flex;
   flex-direction: column;

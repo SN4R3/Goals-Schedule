@@ -1,16 +1,11 @@
-body {
+.title-container {
+  padding: 10px 5px 10px 10px;
+  background: white;
   margin: 0;
-  padding: 0;
-  color: #2d2d2d;
-  background: whitesmoke;
 }
-
 h1 {
-  color:rgb(29, 29, 29);
-}
-
-.point:hover {
-  cursor: pointer;
+  margin: 0;
+  font-size: 2em;
 }
 
 /*Small devices */
@@ -18,6 +13,12 @@ h1 {
 }
 /* Medium devices (tablets, 768px and up)*/
 @media (min-width: 768px) {
+  h1 {
+    font-size: 2.5em;
+  }
+  .title-container {
+    padding: 20px 10px 20px 20px;
+  }
 }
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {

@@ -29,7 +29,7 @@ export default class Navbar extends Component {
     let userButtons = (
       <React.Fragment>
         <button
-          className="btn btn-light btn-sm"
+          className="btn btn-success btn-sm"
           id="loginToggled"
           onClick={e => {
             this.handleToggle(e);
@@ -38,7 +38,7 @@ export default class Navbar extends Component {
           <i className="fas fa-key"></i> Login
         </button>
         <Link to="/register">
-          <button className="btn btn-secondary btn-sm">
+          <button className="btn btn-info btn-sm">
             <i className="fas fa-edit"></i> Sign Up
           </button>
         </Link>
@@ -47,7 +47,7 @@ export default class Navbar extends Component {
           style={{ zIndex: "1" }}
           className={this.state.loginToggled ? "d-block" : "d-none"}
         >
-          <Login hideLogin={this.hideLogin} />
+          <Login hideLogin={this.hideLogin} userLoggedIn={this.props.userLoggedIn}/>
         </div>
       </React.Fragment>
     );
@@ -64,7 +64,7 @@ export default class Navbar extends Component {
             className="btn btn-danger btn-sm"
             onClick={() => {
               axios.get("/api/auth/logout").then(res => {
-                window.location.href = '/';
+                this.props.userLoggedOut()
               });
             }}
           >
@@ -96,12 +96,12 @@ export default class Navbar extends Component {
           }
         >
           <div className="pageLinks">
-            <div>
+            {/* <div>
               <a href="/about">About</a>
             </div>
             <div>
               <a href="/contact">Contact</a>
-            </div>
+            </div> */}
           </div>
           <div className="user-container" style={userContainer}>
             {userButtons}

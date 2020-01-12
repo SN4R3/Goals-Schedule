@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import axios from 'axios'
 
-export default class Login extends Component {
+class Login extends Component {
   constructor() {
     super()
     this.form = React.createRef();
     this.state = {
-      email: 'mattf1993@hotmail.com',
-      password: 'password1234',
+      email: 'testing@test.com',
+      password: 'password',
       errMsg: '',
     }
     this.loginUser = this.loginUser.bind(this)
@@ -23,8 +23,9 @@ export default class Login extends Component {
         if(res.data.error) {
           this.setState({errMsg: res.data.message});
         } else {
-          this.props.hideLogin()
-          window.location.href = '/dashboard'
+          if(this.props.hideLogin)
+            this.props.hideLogin()
+          this.props.userLoggedIn()
         }
       })
     } else {
@@ -51,18 +52,23 @@ export default class Login extends Component {
           >
             <p className="mb-0"><small>{this.state.errMsg}</small></p>
           </div>
-          <button type="submit" className="btn btn-primary">
-            Login
-          </button>
-          <button
-            type="button"
-            className="btn btn-light"
-            onClick={this.props.hideLogin}
-          >
-            Cancel
-          </button>
+
+          <div className="d-flex justify-content-center">
+            <button type="submit" className="mt-3 btn btn-success">
+              Login
+            </button>
+            <button
+              type="button"
+              className={`btn btn-secondary mt-3 ${this.props.noCancel ? 'd-none' : ''}`}
+              onClick={this.props.hideLogin}
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     );
   }
 }
+
+export default Login

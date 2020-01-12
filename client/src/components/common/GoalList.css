@@ -1,0 +1,42 @@
+.statusBlock {
+  color: #fff;
+  border-radius: 15px;
+  height: 20px;
+  padding: 1px 5px;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.notstarted {
+  background-color: #dc3545;
+  border: 1px solid #dc3545;
+}
+
+.inprogress {
+  background-color: #dcaa14;
+  border: 1px solid #ffc107;
+}
+
+.completed {
+  background-color: #28a745;
+  border: 1px solid #28a745;
+}
+
+.goalOps {
+  display:flex;
+  justify-content: space-evenly;
+}
+
+/* Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+  .goalOps {
+    display:flex;
+    justify-content: flex-end;
+  }
+  .goalOps button {
+    margin-left:5px;
+  }
+}
