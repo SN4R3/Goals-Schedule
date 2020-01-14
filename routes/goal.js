@@ -3,6 +3,33 @@ const router = express.Router();
 const connection = require("../connection");
 const Category = require('../models/Category')
 
+
+router.get('/user', (req, res) => {
+  let userId = req.session.userId;
+  connection.query(`SELECT * FROM categories WHERE user_id = ?`, [userId], (err, rows) => {
+    if(err) throw err
+
+    let outstanding = rows.length
+    let payload = []
+    rows.forEach((row) => {
+      const { id, name, user_id, created_at, updated_at } = row
+      let cat = new Category(id, name, user_id, created_at, updated_at)
+
+      cat.withMilestones(connection).then(() => {
+        payload.push(cat)
+        outstanding--;
+        if(!outstanding)
+          res.json(payload)
+      })
+    })
+
+    if(!outstanding) {
+      res.json([]);
+    }
+
+  })
+});
+
 router.post("/", (req, res) => {
   let {
     name,
@@ -78,30 +105,14 @@ router.post("/", (req, res) => {
   );
 });
 
-router.get('/user', (req, res) => {
-  let userId = req.session.userId;
-  connection.query(`SELECT * FROM categories WHERE user_id = ?`, [userId], (err, rows) => {
+router.delete('/:id', (req, res) => {
+  connection.query('DELETE FROM goals WHERE id = ?', [req.params.id], (err, r) => {
     if(err) throw err
-
-    let outstanding = rows.length
-    let payload = []
-    rows.forEach((row) => {
-      const { id, name, user_id, created_at, updated_at } = row
-      let cat = new Category(id, name, user_id, created_at, updated_at)
-
-      cat.withMilestones(connection).then(() => {
-        payload.push(cat)
-        outstanding--;
-        if(!outstanding)
-          res.json(payload)
-      })
+    connection.query('DELETE FROM milestones WHERE goal_id = ?', [req.params.id], (err2, result) => {
+      if(err2) throw err2
+      res.sendStatus(200)
     })
-
-    if(!outstanding) {
-      res.json([]);
-    }
-
   })
-});
+})
 
 module.exports = router;

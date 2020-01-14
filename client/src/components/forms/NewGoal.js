@@ -67,7 +67,7 @@ export default class NewGoal extends Component {
           milestones: JSON.stringify(milestones)
         })
         .then(res => {
-          window.location.href = "/dashboard";
+          //window.location.href = "/user/dashboard";
         });
     }
   }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import NewGoal from "../../forms/NewGoal";
+import NewGoal from "../forms/NewGoal";
 
 export default class NewGoalPage extends Component {
   render() {

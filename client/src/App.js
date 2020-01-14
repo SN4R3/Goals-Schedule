@@ -11,7 +11,7 @@ import "./App.css";
 
 import NavBar from "./components/layout/Navbar";
 import RegisterPage from "./components/pages/RegisterPage";
-import DashboardPage from "./components/pages/User/DashboardPage";
+import UserContainer from "./components/pages/user/UserContainer";
 import Login from "./components/forms/Login";
 
 class App extends Component {
@@ -46,7 +46,7 @@ class App extends Component {
         user: res.data,
         loaded: true,
         redirector: res.data ? (
-          <Redirect to={{ pathname: "/dashboard" }} />
+          <Redirect to={{ pathname: "/user/dashboard" }} />
         ) : (
           <React.Fragment />
         )
@@ -57,9 +57,9 @@ class App extends Component {
   render() {
     const { user, loaded, redirector } = this.state;
     let pages = <React.Fragment />;
-    let dashboardPage = <DashboardPage user={user} />;
+    let userContainer = <UserContainer user={user} />;
     if (!user) {
-      dashboardPage = <Redirect to={{ pathname: "/" }} />;
+      userContainer = <Redirect to={{ pathname: "/" }} />;
     }
     if (loaded) {
       pages = (
@@ -76,7 +76,7 @@ class App extends Component {
           <Route path="/register">
             <RegisterPage />
           </Route>
-          <Route path="/dashboard">{dashboardPage}</Route>
+          <Route path="/user">{userContainer}</Route>
           <Route path="/">
             <div
               className="mt-5 mb-5 pd-10 d-flex justify-content-center align-items-center"

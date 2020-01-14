@@ -32,7 +32,7 @@ export default class NewCategory extends Component {
         <div className="input-group mt-1 mb-2">
           <input
             type="text"
-            name="newCategoryName"
+            name="name"
             value={this.state.name}
             onChange={this.handleChange}
             minLength="2"
