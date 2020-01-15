@@ -10,6 +10,7 @@ const pureify = require("./middleware/pureify");
 const auth = require('./routes/auth');
 const goal = require('./routes/goal')
 const category = require('./routes/category')
+const milestone = require('./routes/milestone')
 
 //Middleware
 app.use(
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', auth);
 app.use('/api/goal', goal);
 app.use('/api/category', category)
+app.use('/api/milestone', milestone)
 
 const port = 5000;
 app.listen(port, () => `Server running on port ${port}`);

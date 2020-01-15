@@ -7,10 +7,10 @@ export default class Register extends Component {
     this.form = React.createRef();
     this.conf_password = React.createRef();
     this.state = {
-      name: "Matt",
-      email: "mattf1993@hotmail.com",
-      password: "password1234",
-      conf_password: "password1234",
+      name: "Test",
+      email: "test@test.com",
+      password: "password",
+      conf_password: "password",
       error: false,
       errMsg: "",
       loading: false,

@@ -1,12 +1,38 @@
 import React, { Component } from "react";
 import './GoalList.css'
 import axios from 'axios'
+import moment from 'moment';
 
 export default class GoalsList extends Component {
   constructor() {
     super()
     this.state = {
       selected: null,
+    }
+  }
+
+  completedMilestones(goal) {
+    let count = 0;
+    if(goal.milestones.length) {
+      goal.milestones.forEach((ms) => {
+        if(ms.status === 'Completed') {
+          count++
+        }
+      })
+      return count +'/'+ goal.milestones.length
+    }
+    return '0'
+  }
+
+  deadlineIn(goal) {
+    if(moment(goal.deadline).diff(moment(), 'days') > 0) {
+      return moment(goal.deadline).diff(moment(), 'days') + ' Days'
+    } else if(moment(goal.deadline).diff(moment(), 'hours') > 0) {
+      return moment(goal.deadline).diff(moment(), 'hours') + 'hrs'
+    } else if(moment(goal.deadline).diff(moment(), 'minutes') > 0) {
+      return moment(goal.deadline).diff(moment(), 'minutes') + 'mins'
+    } else {
+      return 'Times Up!'
     }
   }
 
@@ -31,8 +57,14 @@ export default class GoalsList extends Component {
                 </div>
                 <div className="d-flex border-top py-3 justify-content-around" style={{color: '#777777'}}>
                   <div className="text-center"><i className="fas fa-bullseye"></i> {goal.unit} {goal.target}</div>
-                  <div className="text-center"><i className="fas fa-flag-checkered"></i> 0/5 Milestones</div>
-                  <div className="text-center"><i className="fas fa-stopwatch"></i> 6 Months</div>
+                  <div className="text-center">
+                    <i className="fas fa-flag-checkered"></i>{" "}
+                    {this.completedMilestones(goal)} Milestones
+                  </div>
+                  <div className="text-center">
+                    <i className="fas fa-stopwatch"></i>{" "}
+                    {this.deadlineIn(goal)}
+                  </div>
                 </div>
                 <div
                   onClick={() => {
@@ -48,10 +80,10 @@ export default class GoalsList extends Component {
                   <div>
                     <div className="px-2 py-3 my-3 border">
                       <i className="far fa-comment-alt" style={{color: '#777777'}}></i> 
-                      {" "}{goal.description}
+                      {" "}{goal.description} <em className={`${goal.description.length ? 'd-none' : ''}`}>No Comments!</em>
                     </div>
-                    <p><strong>Set on: </strong>{goal.created_at}</p>
-                    <p><strong>Deadline: </strong>{goal.deadline}</p>
+                    <p><strong>Set on: </strong>{moment(goal.created_at).format("dddd, MMMM Do YYYY, h:mm:ss a")}</p>
+                    <p><strong>Deadline: </strong>{moment(goal.deadline).format("dddd, MMMM Do YYYY, h:mm:ss a")}</p>
                     <button onClick={() => this.props.viewGoal(goal)} className="btn btn-sm btn-light">
                       <i className="fas fa-flag-checkered"></i> 
                       {" "}See Milestones

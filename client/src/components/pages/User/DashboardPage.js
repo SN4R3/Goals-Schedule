@@ -100,7 +100,7 @@ export class DashboardPage extends Component {
           <div className="mt-4 mb-4">
             <div className={`d-flex justify-content-end my-2 ${categories.length ? "" : "d-none"}`}>
               <div className={`${!selectedCategory ? 'd-none' : ''}`}>
-                <Link to="/user/new-goal">
+                <Link to={`/user/new-goal/${selectedCategory ? selectedCategory.id : ''}`}>
                   <button className="btn btn-info">
                     <i className="fa fa-plus"></i> New Goal
                   </button>

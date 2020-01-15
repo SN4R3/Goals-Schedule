@@ -4,7 +4,6 @@ import { Route, Redirect } from "react-router-dom";
 import axios from 'axios'
 
 import DashboardPage from './DashboardPage';
-import NewGoalPage from "../NewGoalPage";
 import GoalPage from '../GoalPage'
 
 export class UserContainer extends Component {
@@ -74,6 +73,30 @@ export class UserContainer extends Component {
     this.setState({ categories })
   }
 
+  passNewGoal(goal) {
+    let categories = this.state.categories
+    categories.forEach((cat) => {
+      if(cat.id === goal.category_id) {
+        cat.goals.push(goal)
+      }
+    })
+    this.setState({categories})
+  }
+
+  passUpdatedGoal(goal) {
+    let categories = this.state.categories
+    categories.forEach((cat) => {
+      if(cat.id === goal.category_id) {
+        cat.goals.forEach((g) => {
+          if(g.id === goal.id) {
+            g = goal
+          } 
+        })
+      }
+    })
+    this.setState({categories})
+  }
+
   categoryCreated(cat) {
     this.setState({
       categories: [...this.state.categories, cat],
@@ -123,9 +146,10 @@ export class UserContainer extends Component {
         className="switch-wrapper"
       >
         {/* New Goal */}
-        <Route path="/user/new-goal">
-          <NewGoalPage category={selectedCategory}/>
-        </Route>
+        <Route 
+          path="/user/new-goal/:catId" 
+          render={(props) => <GoalPage categories={categories} edit={true} passNewGoal={(goal) => this.passNewGoal(goal)}/>}
+        />
         {/* View/Edit Goal */}
         <Route path="/user/goal">
           <GoalPage 
@@ -133,6 +157,7 @@ export class UserContainer extends Component {
             categories={categories}
             edit={editingGoal} 
             toggleEdit={() => this.setState({editingGoal:!this.state.editingGoal})}
+            passUpdatedGoal={(goal) => this.passUpdatedGoal(goal)}
           />
         </Route>
         {/* 'Dashboard' */}

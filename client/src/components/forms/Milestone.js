@@ -1,141 +1,73 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import moment from 'moment'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { withRouter } from 'react-router-dom';
 
-export class GoalMilestone extends Component {
+export class milestone extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      category_id: this.props.goalMilestone ? this.props.goalMilestone.category_id : "",
-      name: this.props.goalMilestone ? this.props.goalMilestone.name : "",
-      description: this.props.goalMilestone ? this.props.goalMilestone.description : "",
-      target: this.props.goalMilestone ? this.props.goalMilestone.target : "",
-      unit: this.props.goalMilestone ? this.props.goalMilestone.unit : "",
-      deadline: this.props.goalMilestone ? moment(this.props.goalMilestone.deadline).toDate() : new Date(),
-      status: this.props.goalMilestone ? this.props.goalMilestone.status : "Not Started",
-      milestones: this.props.goalMilestone ? this.props.goalMilestone.milestones : [],
-    };
+    let { goal_id } = this.props.milestone
+    let milestone = this.props.milestone
+
+    milestone.goal_id = goal_id ? goal_id : null
+    this.state = { milestone: milestone };
+
     this.form = React.createRef();
     this.handleChange = this.handleChange.bind(this);
     this.submitForm = this.submitForm.bind(this);
-    this.addMilestone = this.addMilestone.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(e) {
-    if (e instanceof Date) this.setState({ deadline: e });
-    else this.setState({ [e.target.name]: e.target.value });
-  }
-
-  componentDidUpdate(prevProps) {
-    if(!prevProps.triggerSubmit && this.props.triggerSubmit) {
-      this.form.submit()
+    let milestone = this.state.milestone
+    if (e instanceof Date) {
+      milestone.deadline = e
+    } else {
+      milestone[e.target.name] = e.target.value
     }
+    this.setState({ milestone });
   }
 
   submitForm(e) {
     e.preventDefault();
-    const {
-      name,
-      category_id,
-      target,
-      unit,
-      description,
-      deadline,
-      status,
-      milestones
-    } = this.state;
+    let milestone = this.state.milestone;
     if(this.form.current.reportValidity()) {
-      axios.post("/api/goal", {
-        name,
-        category_id,
-        target,
-        unit,
-        description,
-        deadline: moment(deadline).format(),
-        status,
-        milestones: JSON.stringify(milestones)
-      })
-      .then(res => {
-        //window.location.href = "/user/dashboard";
-      });
+      milestone.deadline = moment(milestone.deadline).format();
+      this.props.addUpdateMilestone(milestone)
     }
-  }
-
-  addMilestone(milestone) {
-    this.setState({
-      milestones: [...this.state.milestones, milestone],
-      newMilestone: false
-    });
-  }
-
-  removeMilestone(i) {
-    let milestones = this.state.milestones;
-    milestones.splice(i, 1);
-    this.setState({ milestones });
-  }
-
-  getCategoryName() {
-    let res = ''
-    if(this.state.category_id) {
-      this.props.categories.forEach((cat) => {
-        if(cat.id === this.state.category_id) {
-          res = cat.name
-        }
-      })
-    }
-    return res
   }
 
   render() {
-    let { categories, edit } = this.props
+    let { edit } = this.props
     let { 
+      id,
       name,
-      category_id,
       target,
       unit,
       description,
       deadline,
-      status } = this.state
+      status } = this.state.milestone
     return (
       <div>
-        <form ref={this.form} onSubmit={this.submitForm}>      
+        <form ref={this.form} onSubmit={this.submitForm}>    
           <div className="form-row my-3">
             {/* Name */}
-            <div className={`form-group ${categories.length ? 'col-xs-12 col-sm-6' : 'col-12'}`}>
+            <div className={`form-group col-12`}>
               <label htmlFor="name">
-                <i className="fas fa-flag-checkered"></i> Name
+                <i className="fas fa-flag-checkered"></i> Name <span style={{ color: "red" }}>*</span>
               </label>
               <input 
                 type="text" 
                 name="name"
+                minLength="2"
+                maxLength="255"
+                required
                 value={name} 
                 onChange={this.handleChange} 
                 className="form-control"
                 readOnly={!edit}
               />
-            </div>
-            {/* Category */}
-            <div className={`form-group col-xs-12 col-sm-6 ${!categories.length ? 'd-none' : ''}`}>
-              <label htmlFor="category_id">
-                <i className="fas fa-shapes"></i> Category 
-              </label>
-              <select 
-                name="category_id" 
-                value={category_id} 
-                onChange={this.handleChange} 
-                className="form-control"
-                readOnly={!edit}
-              >
-                {
-                  categories.map(cat => (
-                    <option value={cat.id} key={`cat${cat.id}`}>{cat.name}</option>
-                  ))
-                }
-              </select>
             </div>
           </div>
 
@@ -143,12 +75,15 @@ export class GoalMilestone extends Component {
             {/* Unit */}
             <div className="form-group col-xs-12 col-sm-3">
               <label htmlFor="unit">
-                <i className="fas fa-bullseye"></i> Unit
+                <i className="fas fa-bullseye"></i> Unit of Measure <span style={{ color: "red" }}>*</span>
               </label>
               <input 
                 type="text" 
                 value={unit} 
-                onChange={this.handleChange} 
+                onChange={this.handleChange}
+                minLength="1"
+                maxLength="255"
+                required
                 name="unit" 
                 className="form-control"
                 readOnly={!edit}
@@ -157,11 +92,14 @@ export class GoalMilestone extends Component {
             {/* Target */}
             <div className="form-group col-xs-12 col-sm-3">
               <label htmlFor="target">
-                <i className="fas fa-bullseye"></i> Target
+                <i className="fas fa-bullseye"></i> Target <span style={{ color: "red" }}>*</span>
               </label>
               <input 
                 type="text" 
                 name="target" 
+                minLength="1"
+                maxLength="255"
+                required
                 value={target} 
                 onChange={this.handleChange} 
                 className="form-control"
@@ -188,12 +126,13 @@ export class GoalMilestone extends Component {
             {/* Deadline */}
             <div className="form-group col-xs-12 col-sm-3" style={{position:'unset'}}>
               <label htmlFor="deadline" style={{display:'block'}}>
-                <i className="fas fa-stopwatch"></i> Deadline
+                <i className="fas fa-stopwatch"></i> Deadline <span style={{ color: "red" }}>*</span>
               </label>
               <DatePicker
                 onChange={this.handleChange}
                 showTimeSelect
-                selected={deadline}
+                selected={moment(deadline).toDate()}
+                minDate={new Date()}
                 dateFormat="Pp"
                 className="form-control"
                 readOnly={!edit}
@@ -210,6 +149,8 @@ export class GoalMilestone extends Component {
                 name="description"
                 cols="30"
                 rows="5"
+                minLength="2"
+                maxLength="255"
                 onChange={this.handleChange}
                 value={description}
                 className="form-control"
@@ -217,10 +158,18 @@ export class GoalMilestone extends Component {
               />
             </div>
           </div>
+          <div className={`justify-content-around align-items-center ${!edit ? 'd-none' : 'd-flex'}`}>
+            <button className={`btn btn-success btn-sm`}>
+              <i className={`fa fa-${id ? 'check' : 'plus'}`}></i> {id ? 'Update' : 'Add'}
+            </button>
+            <div className={`btn btn-danger btn-sm ${!id ? 'd-none' : ''}`}  onClick={() => this.props.removeMilestone(id)}>
+              <i className="fa fa-times"></i> Remove
+            </div>
+        </div>
         </form>
       </div>
     )
   }
 }
 
-export default GoalMilestone
+export default withRouter(milestone)

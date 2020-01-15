@@ -79,10 +79,10 @@ class App extends Component {
           <Route path="/user">{userContainer}</Route>
           <Route path="/">
             <div
-              className="mt-5 mb-5 pd-10 d-flex justify-content-center align-items-center"
+              className="mt-5 mb-5 d-flex justify-content-center align-items-center"
               style={landingContainer}
             >
-              <div className="pd-10 row" style={landingChoices}>
+              <div className="row" style={landingChoices}>
                 <div
                   className="col-xs-12 col-md-6 d-flex flex-column justify-content-center align-items-center"
                   style={{ minHeight: "200px" }}
@@ -132,7 +132,7 @@ const landingContainer = {
 };
 
 const landingChoices = {
-  background: "whitesmoke",
+  background: "#fff",
   borderRadius: "5px",
   width: "100%",
   border: "2px solid #eaeaea"

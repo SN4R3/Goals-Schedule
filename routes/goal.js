@@ -105,6 +105,41 @@ router.post("/", (req, res) => {
   );
 });
 
+router.put("/", (req, res) => {
+  let {
+    id,
+    name,
+    category_id,
+    description,
+    target,
+    unit,
+    deadline,
+    status,
+    milestones
+  } = req.body;
+  const query = `
+    UPDATE goals SET name = ?, category_id = ?, description = ?, target = ?, unit = ?, deadline = ?, status = ?
+    WHERE id = ?
+  `;
+  connection.query(
+    query,
+    [name, category_id, description, target, unit, deadline, status, id],
+    (err, result) => {
+      if (err) throw err;
+      connection.query(
+        "SELECT * FROM goals WHERE id = ?",
+        [id],
+        (err, rows) => {
+          if (err) throw err;
+          let goal = rows[0];
+          goal.milestones = JSON.parse(milestones)
+          res.json(goal);
+        }
+      );
+    }
+  );
+});
+
 router.delete('/:id', (req, res) => {
   connection.query('DELETE FROM goals WHERE id = ?', [req.params.id], (err, r) => {
     if(err) throw err

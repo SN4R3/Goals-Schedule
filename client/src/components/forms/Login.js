@@ -6,7 +6,7 @@ class Login extends Component {
     super()
     this.form = React.createRef();
     this.state = {
-      email: 'testing@test.com',
+      email: 'test@test.com',
       password: 'password',
       errMsg: '',
     }
