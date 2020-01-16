@@ -11,6 +11,9 @@ const auth = require('./routes/auth');
 const goal = require('./routes/goal')
 const category = require('./routes/category')
 const milestone = require('./routes/milestone')
+const path = require('path')
+
+app.use(express.static(path.join(__dirname, 'client/build')))
 
 //Middleware
 app.use(

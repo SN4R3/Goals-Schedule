@@ -4,7 +4,6 @@
   "description": "Starter kit for creating React and Express apps",
   "main": "server.js",
   "scripts": {
-    "build": "cd client && npm run build",
     "client-install": "cd client && npm install",
     "start": "node server.js",
     "server": "nodemon server.js",
@@ -32,5 +31,8 @@
     "react-router-dom": "^5.1.2",
     "react-router-transition": "^2.0.0",
     "uuid": "^3.3.3"
+  },
+  "engines": {
+    "node": "12.13.1"
   }
 }
