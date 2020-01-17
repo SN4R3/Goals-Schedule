@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Route,
   Redirect,
-  Link
+  Link,
+  Switch
 } from "react-router-dom";
 import { AnimatedSwitch, spring } from "react-router-transition";
 import axios from "axios";
@@ -63,16 +64,17 @@ class App extends Component {
     }
     if (loaded) {
       pages = (
-        <AnimatedSwitch
-          atEnter={{
-            opacity: 0,
-            translateY: 15
-          }}
-          atLeave={{ opacity: this.bounce(0), translateY: 15}}
-          atActive={{ opacity: this.bounce(1), translateY: 0 }}
-          mapStyles={this.mapStyles}
-          className="switch-wrapper"
-        >
+        // <AnimatedSwitch
+        //   atEnter={{
+        //     opacity: 0,
+        //     translateY: 15
+        //   }}
+        //   atLeave={{ opacity: this.bounce(0), translateY: 15}}
+        //   atActive={{ opacity: this.bounce(1), translateY: 0 }}
+        //   mapStyles={this.mapStyles}
+        //   className="switch-wrapper"
+        // >
+        <Switch>
           <Route path="/register">
             <RegisterPage />
           </Route>
@@ -111,7 +113,8 @@ class App extends Component {
               </div>
             </div>
           </Route>
-        </AnimatedSwitch>
+        </Switch>
+        //</AnimatedSwitch>
       );
     }
 
