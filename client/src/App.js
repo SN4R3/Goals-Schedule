@@ -52,7 +52,10 @@ class App extends Component {
           <React.Fragment />
         )
       });
-    });
+    }).catch(err => {
+      console.log(err)
+      this.setState({loaded: true})
+    })
   }
 
   render() {
@@ -64,17 +67,16 @@ class App extends Component {
     }
     if (loaded) {
       pages = (
-        // <AnimatedSwitch
-        //   atEnter={{
-        //     opacity: 0,
-        //     translateY: 15
-        //   }}
-        //   atLeave={{ opacity: this.bounce(0), translateY: 15}}
-        //   atActive={{ opacity: this.bounce(1), translateY: 0 }}
-        //   mapStyles={this.mapStyles}
-        //   className="switch-wrapper"
-        // >
-        <Switch>
+        <AnimatedSwitch
+          atEnter={{
+            opacity: 0,
+            translateY: 15
+          }}
+          atLeave={{ opacity: this.bounce(0), translateY: 15}}
+          atActive={{ opacity: this.bounce(1), translateY: 0 }}
+          mapStyles={this.mapStyles}
+          className="switch-wrapper"
+        >
           <Route path="/register">
             <RegisterPage />
           </Route>
@@ -113,8 +115,7 @@ class App extends Component {
               </div>
             </div>
           </Route>
-        </Switch>
-        //</AnimatedSwitch>
+        </AnimatedSwitch>
       );
     }
 

@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const connection = require("./connection");
 const bodyParser = require("body-parser");
+const path = require('path');
 
 const helmet = require("helmet");
 const sessions = require("client-sessions");
@@ -11,9 +12,11 @@ const auth = require('./routes/auth');
 const goal = require('./routes/goal')
 const category = require('./routes/category')
 const milestone = require('./routes/milestone')
-const path = require('path')
 
-app.use(express.static(path.join(__dirname, 'client/build')))
+// app.get(["/","/index.html.var"],function(req,res){
+// });
+
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 //Middleware
 app.use(
@@ -64,5 +67,8 @@ app.use('/api/goal', goal);
 app.use('/api/category', category)
 app.use('/api/milestone', milestone)
 
-const port = 5000;
-app.listen(port, () => `Server running on port ${port}`);
+const port = process.env.PORT || 5000;
+app.listen(port, '0.0.0.0', (err) => {
+    if(err) throw err 
+    console.log(`Server running on port ${port}`) 
+});
