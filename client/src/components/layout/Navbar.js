@@ -77,7 +77,7 @@ export default class Navbar extends Component {
     return (
       <div className="navbarContainer">
         <div className="navControl">
-          <div className="brand">Goals Schedule!</div>
+          <div className="brand">Goals Schedule</div>
           <div className="d-block d-sm-none toggler">
             <i
               className="fas fa-bars"

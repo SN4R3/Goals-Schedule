@@ -3,8 +3,7 @@ import {
   BrowserRouter as Router,
   Route,
   Redirect,
-  Link,
-  Switch
+  Link
 } from "react-router-dom";
 import { AnimatedSwitch, spring } from "react-router-transition";
 import axios from "axios";
@@ -52,10 +51,7 @@ class App extends Component {
           <React.Fragment />
         )
       });
-    }).catch(err => {
-      console.log(err)
-      this.setState({loaded: true})
-    })
+    });
   }
 
   render() {
