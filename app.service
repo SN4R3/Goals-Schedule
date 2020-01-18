@@ -1,0 +1,15 @@
+[Unit]
+Description=My app
+
+[Service]
+ExecStart=/home3/mfinniganweb/goals-schedule/server.js
+Restart=always
+User=nobody
+# Note Debian/Ubuntu uses 'nogroup', RHEL/Fedora uses 'nobody'
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home3/mfinniganweb/goals-schedule
+
+[Install]
+WantedBy=multi-user.target

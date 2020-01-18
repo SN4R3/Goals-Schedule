@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const connection = require("./connection");
 const bodyParser = require("body-parser");
-const path = require('path');
 
+const path = require('path');
 const helmet = require("helmet");
 const sessions = require("client-sessions");
 const pureify = require("./middleware/pureify");
@@ -12,9 +12,6 @@ const auth = require('./routes/auth');
 const goal = require('./routes/goal')
 const category = require('./routes/category')
 const milestone = require('./routes/milestone')
-
-// app.get(["/","/index.html.var"],function(req,res){
-// });
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 

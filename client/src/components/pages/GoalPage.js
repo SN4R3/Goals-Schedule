@@ -19,6 +19,7 @@ export class GoalPage extends Component {
           unit: "",
           deadline: new Date(),
           status: "Not Started",
+          current_value: 0,
           milestones: [],
         },
     }
@@ -38,6 +39,7 @@ export class GoalPage extends Component {
         unit: "",
         deadline: new Date(),
         status: "Not Started",
+        current_value: 0,
         milestones: [],
       },
     })

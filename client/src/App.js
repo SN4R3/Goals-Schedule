@@ -46,7 +46,7 @@ class App extends Component {
         user: res.data,
         loaded: true,
         redirector: res.data ? (
-          <Redirect to={{ pathname: "/user/dashboard" }} />
+          <Redirect to={{ pathname: "/user" }} />
         ) : (
           <React.Fragment />
         )

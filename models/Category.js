@@ -39,8 +39,8 @@ module.exports = class Category {
           m.status AS m_s, m.created_at AS m_c_a, m.updated_at AS m_u_a, 
           
           g.id AS g_id, g.category_id AS g_cid, g.name AS g_n, g.description AS g_d,
-          g.target AS g_t, g.unit AS g_u, g.deadline AS g_dl,
-          g.status AS g_s, g.created_at AS g_c_a, g.updated_at AS g_u_a
+          g.target AS g_t, g.unit AS g_u, g.deadline AS g_dl, g.status AS g_s,
+          g.current_value AS g_c_v, g.created_at AS g_c_a, g.updated_at AS g_u_a
           FROM goals AS g
           LEFT JOIN milestones AS m ON m.goal_id = g.id
           WHERE g.category_id = ?
@@ -86,6 +86,7 @@ module.exports = class Category {
         unit,
         deadline,
         status,
+        current_value,
         created_at,
         updated_at
       } = row;
@@ -99,6 +100,7 @@ module.exports = class Category {
         unit,
         deadline,
         status,
+        current_value,
         created_at,
         updated_at
       );
