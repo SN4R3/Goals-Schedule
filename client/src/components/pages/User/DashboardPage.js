@@ -1,67 +1,20 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import './DashboardPage.css'
+import React, { Component } from 'react'
+import { Route, Link, Switch, BrowserRouter as Router } from "react-router-dom";
 
-import NewCategory from "../../forms/NewCategory";
-import GoalsList from '../../common/GoalsList'
+import UserGoalsPage from './UserGoalsPage';
+import UpdateableList from '../../common/UpdatedableList'
 
 export class DashboardPage extends Component {
+
   constructor() {
-    super();
-    this.state = {
-      creatingCategory: false,
-      redirector: <React.Fragment/>
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.categoryCreated = this.categoryCreated.bind(this)
-  }
-
-  handleChange(e) {
-    this.props.categorySelected(e.target.value)
-  }
-
-  categoryCreated(cat) {
-    this.setState({ creatingCategory: false })
-    this.props.categoryCreated(cat)
-  }
-
-  getGoalsForViewing() {
-    let allGoals = []
-    this.props.categories.forEach((cat) => {
-      allGoals = allGoals.concat(cat.goals)
-    })
-    
-    return this.props.selectedCategory ?
-      this.props.selectedCategory.goals : allGoals
-  }  
-
-  renderNewCategoryBtn() {
-    if (this.state.creatingCategory) {
-      return <React.Fragment></React.Fragment>;
-    } else {
-      return (
-        <button 
-          className="btn btn-success btn-sm" onClick={() => {
-            this.setState({ creatingCategory: true });
-          }}
-        >
-          <i className="fa fa-plus"></i> New Category
-        </button>
-      );
-    }
+    super()
+    this.state ={ activeTab: 'upcoming' }
   }
 
   render() {
-    const { categories, selectedCategory } = this.props;
-    const { creatingCategory } = this.state
-
-    let catOptions = categories.map(cat => (
-      <option key={`catopt${cat.id}`} value={cat.id}>
-        {cat.name}
-      </option>
-    ));
+    let { activeTab } = this.state
     return (
-      <div>
+      <Router>
         <div className="d-flex justify-content-between align-items-center border title-container">
           <h1>
             <i className="fas fa-tachometer-alt"></i>
@@ -74,62 +27,43 @@ export class DashboardPage extends Component {
             </button>
           </div>
         </div>
-        <div className="mt-4">
-          <div className={!creatingCategory ? 'd-none' : ''}>
-            <NewCategory
-              categoryCreated={this.props.categoryCreated}
-              cancelNewCategory={() =>
-                this.setState({ creatingCategory: false })
-              }
-            />
-          </div>
-          
-          <div className="input-group mb-3">
-            <select
-              name="selectedCat"
-              className={`custom-select ${creatingCategory ? "d-none" : ""}`}
-              value={selectedCategory ? selectedCategory.id : ''}
-              onChange={this.handleChange}
-            >
-              <option value="">All Categories</option>;{catOptions}
-            </select>
-            <div className="input-group-append">
-              {this.renderNewCategoryBtn()}
+        <div className="d-flex my-2 justify-content-around align-items-center">
+          <Link to="/user" style={{width:'100%'}} onClick={() => this.setState({activeTab: 'upcoming'})}>
+            <div className={`btn btn-${activeTab === 'upcoming' ? 'secondary' : 'light'} border p-3 d-block`}>
+              Upcoming
             </div>
-          </div>
-          <div className="mt-4 mb-4">
-            <div className={`d-flex justify-content-end my-2 ${categories.length ? "" : "d-none"}`}>
-              <div className={`${!selectedCategory ? 'd-none' : ''}`}>
-                <Link to={`/user/new-goal/${selectedCategory ? selectedCategory.id : ''}`}>
-                  <button className="btn btn-info">
-                    <i className="fa fa-plus"></i> New Goal
-                  </button>
-                </Link>
-              </div>
-              <button
-                className={`btn btn-danger ml-2 ${selectedCategory ? "" : "d-none"}`}
-                onClick={() => this.props.deleteCategory()}
-              >
-                <i className="fa fa-minus-circle"></i> Delete Category
-              </button>
+          </Link>
+          <Link to="/user/goals" style={{width:'100%'}} onClick={() => this.setState({activeTab: 'goals'})}>
+            <div className={`btn btn-${activeTab === 'goals' ? 'secondary' : 'light'} border p-3 d-block`}>
+              Goals
             </div>
-              
-            <h3>
-              {selectedCategory ? `${selectedCategory.name} Goals` : ""}
-            </h3>
-            <div className="mt-4 mb-4">
-              <GoalsList 
-                goals={this.getGoalsForViewing()} 
-                goalDeleted={this.props.goalDeleted}
-                viewGoal={this.props.viewGoal}
-                editGoal={this.props.editGoal}
-              />
-            </div>
-          </div>
+          </Link>
         </div>
-      </div>
-    );
+        <Switch>
+          <Route path="/user/goals">
+            <UserGoalsPage
+              categories={this.props.categories}
+              selectedCategory={this.props.selectedCategory}
+              categoryCreated={this.props.categoryCreated}
+              categorySelected={this.props.categorySelected}
+              deleteCategory={this.props.deleteCategory}
+              goalDeleted={this.props.goalDeleted}
+              viewGoal={this.props.viewGoal}
+              editGoal={(goal) => this.props.editGoal(goal)}
+              toggleEdit={this.props.toggleEdit}
+            />
+          </Route>
+          <Route path="/">
+            <UpdateableList 
+              categories={this.props.categories}
+              passUpdatedGoal={(goal) => this.props.passUpdatedGoal(goal)}
+              editGoal={(goal) => this.props.editGoal(goal)}
+            />
+          </Route>
+        </Switch>
+      </Router>
+    )
   }
 }
 
-export default DashboardPage;
+export default DashboardPage

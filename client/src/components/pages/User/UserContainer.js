@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { AnimatedSwitch, spring } from "react-router-transition";
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect, BrowserRouter as Router } from "react-router-dom";
 import axios from 'axios'
 
-import DashboardPage from './DashboardPage';
 import GoalPage from '../GoalPage'
+import DashboardPage from './DashboardPage';
 
 export class UserContainer extends Component {
 
@@ -49,15 +49,19 @@ export class UserContainer extends Component {
     this.setState({
       selectedGoal: goal, 
       editingGoal: false, 
-      redirector: <Redirect to="/user/goal" push/>
+      redirector: <Redirect to="/goal" push/>
     })
+    let self = this
+    setTimeout(() => {
+      self.setState({ redirector:null })
+    }, 100)
   }
 
   editGoal(goal) {
     this.setState({
       selectedGoal: goal, 
       editingGoal: true,
-      redirector: <Redirect to="/user/goal" push/>
+      redirector: <Redirect to="/goal" push/>
     })
     let self = this
     setTimeout(() => {
@@ -135,47 +139,50 @@ export class UserContainer extends Component {
   render() {
     const { selectedCategory, selectedGoal, editingGoal, categories } = this.state
     return (
-      <AnimatedSwitch
-        atEnter={{
-          opacity: 0,
-          translateY: 15
-        }}
-        atLeave={{ opacity: this.bounce(0), translateY: 15 }}
-        atActive={{ opacity: this.bounce(1), translateY: 0 }}
-        mapStyles={this.mapStyles}
-        className="switch-wrapper"
-      >
-        {/* New Goal */}
-        <Route 
-          path="/user/new-goal/:catId" 
-          render={(props) => <GoalPage categories={categories} edit={true} passNewGoal={(goal) => this.passNewGoal(goal)}/>}
-        />
-        {/* View/Edit Goal */}
-        <Route path="/user/goal">
-          <GoalPage 
-            goal={selectedGoal} 
-            categories={categories}
-            edit={editingGoal} 
-            toggleEdit={() => this.setState({editingGoal:!this.state.editingGoal})}
-            passUpdatedGoal={(goal) => this.passUpdatedGoal(goal)}
+      <Router basename="/user">
+        <AnimatedSwitch
+          atEnter={{
+            opacity: 0,
+            translateY: 15
+          }}
+          atLeave={{ opacity: this.bounce(0), translateY: 15 }}
+          atActive={{ opacity: this.bounce(1), translateY: 0 }}
+          mapStyles={this.mapStyles}
+          className="switch-wrapper"
+        >
+          {/* New Goal */}
+          <Route 
+            path="/new-goal/:catId" 
+            render={(props) => <GoalPage categories={categories} edit={true} passNewGoal={(goal) => this.passNewGoal(goal)}/>}
           />
-        </Route>
-        {/* 'Dashboard' */}
-        <Route path="/user/dashboard">
-          <DashboardPage
-            categories={categories}
-            selectedCategory={selectedCategory}
-            categoryCreated={this.categoryCreated}
-            categorySelected={this.categorySelected}
-            deleteCategory={this.deleteCategory}
-            goalDeleted={this.goalDeleted}
-            viewGoal={this.viewGoal}
-            editGoal={this.editGoal}
-            toggleEdit={this.toggleEdit}
-          />
-          {this.renderRedirector()}
-        </Route>
-      </AnimatedSwitch>
+          {/* View/Edit Goal */}
+          <Route path="/goal">
+            <GoalPage 
+              goal={selectedGoal} 
+              categories={categories}
+              edit={editingGoal} 
+              toggleEdit={() => this.setState({editingGoal:!this.state.editingGoal})}
+              passUpdatedGoal={(goal) => this.passUpdatedGoal(goal)}
+            />
+          </Route>
+          {/* Dashboard */}
+          <Route path="/">
+            <DashboardPage
+              categories={categories}
+              selectedCategory={selectedCategory}
+              categoryCreated={this.categoryCreated}
+              categorySelected={this.categorySelected}
+              deleteCategory={this.deleteCategory}
+              goalDeleted={this.goalDeleted}
+              viewGoal={this.viewGoal}
+              editGoal={(goal) => this.editGoal(goal)}
+              toggleEdit={this.toggleEdit}
+              passUpdatedGoal={(goal) => this.passUpdatedGoal(goal)}
+            />
+            {this.renderRedirector()}
+          </Route>
+        </AnimatedSwitch>
+      </Router>
     )
   }
 }

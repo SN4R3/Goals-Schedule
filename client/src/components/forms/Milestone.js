@@ -50,6 +50,12 @@ export class milestone extends Component {
       status } = this.state.milestone
     return (
       <div>
+        <div className="d-flex">
+          <i className="fa fa-signal mr-1"></i> Status:
+          <div className={`ml-1 statusBlock ${status.toLowerCase().replace(' ', '')}`}>
+            {status}
+          </div>
+        </div>
         <form ref={this.form} onSubmit={this.submitForm}>    
           <div className="form-row my-3">
             {/* Name */}
@@ -73,7 +79,7 @@ export class milestone extends Component {
 
           <div className="form-row my-3">
             {/* Unit */}
-            <div className="form-group col-xs-12 col-sm-3">
+            <div className="form-group col-xs-12 col-sm-4">
               <label htmlFor="unit">
                 <i className="fas fa-bullseye"></i> Unit of Measure <span style={{ color: "red" }}>*</span>
               </label>
@@ -90,12 +96,12 @@ export class milestone extends Component {
               />  
             </div>
             {/* Target */}
-            <div className="form-group col-xs-12 col-sm-3">
+            <div className="form-group col-xs-12 col-sm-4">
               <label htmlFor="target">
                 <i className="fas fa-bullseye"></i> Target <span style={{ color: "red" }}>*</span>
               </label>
               <input 
-                type="text" 
+                type="number" 
                 name="target" 
                 minLength="1"
                 maxLength="255"
@@ -106,25 +112,8 @@ export class milestone extends Component {
                 readOnly={!edit}
               />
             </div>
-            {/* Status */}
-            <div className="form-group col-xs-12 col-sm-3">
-              <label htmlFor="status">
-                <i className="fas fa-signal"></i> Status
-              </label>
-              <select 
-                name="status" 
-                value={status} 
-                onChange={this.handleChange} 
-                className="form-control"
-                readOnly={!edit}
-              >
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
             {/* Deadline */}
-            <div className="form-group col-xs-12 col-sm-3" style={{position:'unset'}}>
+            <div className="form-group col-xs-12 col-sm-4" style={{position:'unset'}}>
               <label htmlFor="deadline" style={{display:'block'}}>
                 <i className="fas fa-stopwatch"></i> Deadline <span style={{ color: "red" }}>*</span>
               </label>
@@ -165,7 +154,7 @@ export class milestone extends Component {
             <div className={`btn btn-danger btn-sm ${!id ? 'd-none' : ''}`}  onClick={() => this.props.removeMilestone(id)}>
               <i className="fa fa-times"></i> Remove
             </div>
-        </div>
+          </div>
         </form>
       </div>
     )

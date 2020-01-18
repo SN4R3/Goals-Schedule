@@ -50,13 +50,13 @@ export default class GoalsList extends Component {
         {
           this.props.goals.length ? 
             this.props.goals.map(goal => (
-              <div className="p-2 my-1" key={`goal${goal.id}`}>
+              <div className="p-2 my-1 goal-container" key={`goal${goal.id}`} onClick={() => this.setState({selected: goal})}>
                 <div className="py-2 px-1 d-flex align-items-center" onClick={() => {this.setState({selected:goal})}}>
                   <div className={`statusBlock ${goal.status.toLowerCase().replace(' ', '')}`}>{goal.status}</div>
                   <h4 className="ml-2">{goal.name}</h4>
                 </div>
                 <div className="d-flex border-top py-3 justify-content-around" style={{color: '#777777'}}>
-                  <div className="text-center"><i className="fas fa-bullseye"></i> {goal.unit} {goal.target}</div>
+                  <div className="text-center"><i className="fas fa-bullseye"></i> {goal.current_value}/{goal.target} {goal.unit} </div>
                   <div className="text-center">
                     <i className="fas fa-flag-checkered"></i>{" "}
                     {this.completedMilestones(goal)} Milestones

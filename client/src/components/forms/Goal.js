@@ -58,7 +58,7 @@ export class Goal extends Component {
       target: "",
       unit: "",
       deadline: new Date(),
-      status: "Not Started",
+      status: "Not Started"
     }]
     this.setState({ goal, addingMilestone: true });
   }
@@ -122,7 +122,7 @@ export class Goal extends Component {
           res.data.deadline = moment(res.data.deadline).toDate()
           this.props.passUpdatedGoal(res.data)
           let self = this
-          this.setState({redirector: <Redirect to="/user/dashboard"/>})
+          this.setState({redirector: <Redirect to="/user"/>})
           setTimeout(() => {
             self.setState({redirector: null})
           }, 100)
@@ -132,7 +132,7 @@ export class Goal extends Component {
         axios.post("/api/goal", goal).then(res => {
           this.props.passNewGoal(res.data)
           let self = this
-          this.setState({redirector: <Redirect to="/user/dashboard"/>})
+          this.setState({redirector: <Redirect to="/user"/>})
           setTimeout(() => {
             self.setState({redirector: null})
           }, 100)
@@ -174,12 +174,19 @@ export class Goal extends Component {
       unit,
       description,
       deadline,
-      status
+      status,
+      current_value,
     } = this.state.goal
     return (
       <div>
         <form ref={this.form} onSubmit={this.submitForm}>    
           <button type="submit" style={{visibility:'hidden'}} ref={this.submitBtn} onClick={() => this.submitForm}></button>
+          <div className="d-flex">
+            <i className="fa fa-signal mr-1"></i> Status:
+            <div className={`ml-1 statusBlock ${status.toLowerCase().replace(' ', '')}`}>
+              {status}
+            </div>
+          </div>
           <div className="form-row my-3">
             {/* Name */}
             <div className={`form-group col-xs-12 col-sm-6`}>
@@ -243,7 +250,7 @@ export class Goal extends Component {
                 <i className="fas fa-bullseye"></i> Target <span style={{ color: "red" }}>*</span>
               </label>
               <input 
-                type="text" 
+                type="number" 
                 name="target" 
                 minLength="1"
                 maxLength="255"
@@ -254,22 +261,22 @@ export class Goal extends Component {
                 readOnly={!edit}
               />
             </div>
-            {/* Status */}
-            <div className="form-group col-xs-12 col-sm-3">
-              <label htmlFor="status">
-                <i className="fas fa-signal"></i> Status
+            {/* Current value */}
+            <div className={`form-group col-xs-12 col-sm-3`}>
+              <label htmlFor="current_value">
+                <i className="fas fa-flag-checkered"></i> Current Value <span style={{ color: "red" }}>*</span>
               </label>
-              <select 
-                name="status" 
-                value={status} 
+              <input 
+                type="number" 
+                name="current_value"
+                minLength="1"
+                maxLength="255"
+                required
+                value={current_value} 
                 onChange={this.handleChange} 
                 className="form-control"
                 readOnly={!edit}
-              >
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
+              />
             </div>
             {/* Deadline */}
             <div className="form-group col-xs-12 col-sm-3" style={{position:'unset'}}>

@@ -39,15 +39,16 @@ router.post("/", (req, res) => {
     unit,
     deadline,
     status,
+    current_value,
     milestones
   } = req.body;
   const query = `
-    INSERT INTO goals (name, category_id, description, target, unit, deadline, status)
-    VALUES (?,?,?,?,?,?,?)
+    INSERT INTO goals (name, category_id, description, target, unit, deadline, status,current_value)
+    VALUES (?,?,?,?,?,?,?, ?)
   `;
   connection.query(
     query,
-    [name, category_id, description, target, unit, deadline, status],
+    [name, category_id, description, target, unit, deadline, status, current_value],
     (err, result) => {
       if (err) throw err;
       connection.query(
@@ -115,15 +116,17 @@ router.put("/", (req, res) => {
     unit,
     deadline,
     status,
-    milestones
+    milestones,
+    current_value,
   } = req.body;
   const query = `
-    UPDATE goals SET name = ?, category_id = ?, description = ?, target = ?, unit = ?, deadline = ?, status = ?
+    UPDATE goals SET name = ?, category_id = ?, description = ?, target = ?, unit = ?, deadline = ?, status = ?,
+    current_value = ?
     WHERE id = ?
   `;
   connection.query(
     query,
-    [name, category_id, description, target, unit, deadline, status, id],
+    [name, category_id, description, target, unit, deadline, status, current_value, id],
     (err, result) => {
       if (err) throw err;
       connection.query(
@@ -139,6 +142,28 @@ router.put("/", (req, res) => {
     }
   );
 });
+
+router.put('/currentValue', (req, res) => {
+  let = { id, current_value } = req.body
+  const query = `
+    UPDATE goals SET current_value = ? WHERE id = ?
+  `;
+  connection.query(
+    query,
+    [current_value, id],
+    (err, result) => {
+      if (err) throw err;
+      connection.query(
+        "SELECT * FROM goals WHERE id = ?",
+        [id],
+        (err, rows) => {
+          if (err) throw err;
+          res.json(rows[0]);
+        }
+      );
+    }
+  );
+})
 
 router.delete('/:id', (req, res) => {
   connection.query('DELETE FROM goals WHERE id = ?', [req.params.id], (err, r) => {

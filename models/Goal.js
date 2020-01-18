@@ -11,6 +11,7 @@ module.exports = class Goal {
     unit,
     deadline,
     status,
+    current_value,
     created_at,
     updated_at
   ) {
@@ -22,6 +23,7 @@ module.exports = class Goal {
     this.unit = unit;
     this.deadline = deadline;
     this.status = status;
+    this.current_value = current_value;
     this.created_at = created_at;
     this.updated_at = updated_at;
   }

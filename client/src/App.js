@@ -4,7 +4,6 @@ import {
   Route,
   Redirect,
   Link,
-  Switch
 } from "react-router-dom";
 import { AnimatedSwitch, spring } from "react-router-transition";
 import axios from "axios";
@@ -47,7 +46,7 @@ class App extends Component {
         user: res.data,
         loaded: true,
         redirector: res.data ? (
-          <Redirect to={{ pathname: "/user/dashboard" }} />
+          <Redirect to={{ pathname: "/user" }} />
         ) : (
           <React.Fragment />
         )

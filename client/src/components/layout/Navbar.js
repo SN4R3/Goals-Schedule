@@ -55,7 +55,7 @@ export default class Navbar extends Component {
     if (this.props.user) {
       userButtons = (
         <React.Fragment>
-          <Link to="/user/dashboard">
+          <Link to="/user">
             <button className="btn btn-primary btn-sm">
               <i className="fas fa-user-circle"></i> My Dashboard
             </button>

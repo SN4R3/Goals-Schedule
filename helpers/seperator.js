@@ -4,7 +4,7 @@ module.exports = {
     rows.forEach(row => {
       let exists = false;
       const {
-        g_id, g_cid, g_n, g_d, g_t, g_u, g_dl, g_s, g_c_a, g_u_a, //goal's
+        g_id, g_cid, g_n, g_d, g_t, g_u, g_dl, g_s, g_c_a, g_u_a, g_c_v, //goal's
         id, name, user_id, created_at, updated_at //category's
       } = row
       res.forEach(existing => {
@@ -19,6 +19,7 @@ module.exports = {
             unit: g_u,
             deadline: g_dl,
             status: g_s,
+            current_value: g_c_v,
             created_at: g_c_a,
             updated_at: g_u_a
           });
@@ -43,6 +44,7 @@ module.exports = {
           target: g_t,
           unit: g_u,
           deadline: g_dl,
+          current_value: g_c_v,
           created_at: g_c_a,
           updated_at: g_u_a
         });
@@ -56,7 +58,7 @@ module.exports = {
     let res = [];
     rows.forEach(row => {
       const {
-        g_id, g_cid, g_n, g_d, g_t, g_u, g_dl, g_s, g_c_a, g_u_a, //goal's
+        g_id, g_cid, g_n, g_d, g_t, g_u, g_dl, g_s, g_c_a, g_u_a, g_c_v, //goal's
         m_id, m_n, m_d, m_t, m_u, m_dl, m_s, m_c_a, m_u_a //milestone's
       } = row;
 
@@ -89,6 +91,7 @@ module.exports = {
           unit: g_u,
           deadline: g_dl,
           status: g_s,
+          current_value: g_c_v,
           created_at: g_c_a,
           updated_at: g_u_a,
           milestones: [],
