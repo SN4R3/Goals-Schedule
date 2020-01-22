@@ -31,7 +31,8 @@ export default class UpdatedableList extends Component {
 
   submitForm(e) {
     e.preventDefault();
-    if(this.form.current.reportValidity()) {
+    //if(this.form.current.reportValidity()) {
+    if(true) {
       let editing = this.state.editing
       axios.put('/api/goal/currentValue', editing).then(res => {
         res.data.milestones = editing.milestones
