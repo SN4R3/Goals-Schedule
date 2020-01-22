@@ -67,12 +67,13 @@ export class Goal extends Component {
     let goal = this.state.goal
     goal.milestones.forEach((milestone, j) => {
       if(i === j) {
-        if(!ms.id) {
-          if(!ms.goal_id) {
-            //new milestone in new goal
-            ms.id = uuid.v4()
-            milestone = ms
-            this.setState({ goal, addingMilestone:false })
+        if(ms.goal_id) {
+          if(ms.id) {
+            //existing milestone, existing goal
+            axios.put('/api/milestone', ms).then(res => {
+              goal.milestones[i] = res.data
+              this.setState({ goal, addingMilestone:false })
+            })
           } else {
             //new milestone in existing goal
             axios.post('/api/milestone', ms).then(res => {
@@ -80,12 +81,15 @@ export class Goal extends Component {
               this.setState({ goal, addingMilestone:false })
             })
           }
+        } else if(ms.id) {
+          //existing milestone in a new goal
+          goal.milestones[i] = ms;
+          this.setState({ goal, addingMilestone:false })
         } else {
-          //existing milestone, existing goal
-          axios.put('/api/milestone', ms).then(res => {
-            goal.milestones[i] = res.data
-            this.setState({ goal, addingMilestone:false })
-          })
+          //new milestone in new goal
+          ms.id = uuid.v4()
+          milestone = ms
+          this.setState({ goal, addingMilestone:false })
         }
       }
     })
@@ -149,7 +153,7 @@ export class Goal extends Component {
           milestone={ms}
           addUpdateMilestone={(newMs) => this.addUpdateMilestone(newMs, i)}
           removeMilestone={() => this.removeMilestone(i)}
-          edit={this.props.edit}
+          edit={this.state.addingMilestone}
         /> 
       </div>
     );

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import './UserGoalsPage.css'
 
 import NewCategory from "../../forms/NewCategory";
@@ -87,12 +86,10 @@ export class UserGoalsPage extends Component {
           </div>
           <div className="mt-4 mb-4">
             <div className={`d-flex justify-content-end my-2 ${categories.length ? "" : "d-none"}`}>
-              <div className={`${!selectedCategory ? 'd-none' : ''}`}>
-                <Link to={`/user/new-goal/${selectedCategory ? selectedCategory.id : ''}`}>
-                  <button className="btn btn-info">
-                    <i className="fa fa-plus"></i> New Goal
-                  </button>
-                </Link>
+              <div>
+                <button className="btn btn-info" onClick={() => this.props.newGoal()}>
+                  <i className="fa fa-plus"></i> New Goal
+                </button>
               </div>
               <button
                 className={`btn btn-danger ml-2 ${selectedCategory ? "" : "d-none"}`}

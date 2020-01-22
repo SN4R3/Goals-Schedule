@@ -55,11 +55,9 @@ export default class Navbar extends Component {
     if (this.props.user) {
       userButtons = (
         <React.Fragment>
-          <Link to="/user">
-            <button className="btn btn-primary btn-sm">
-              <i className="fas fa-user-circle"></i> My Dashboard
-            </button>
-          </Link>
+          <button onClick={() => this.props.toDashboard()} className="btn btn-primary btn-sm">
+            <i className="fas fa-user-circle"></i> My Dashboard
+          </button>
           <button
             className="btn btn-danger btn-sm"
             onClick={() => {

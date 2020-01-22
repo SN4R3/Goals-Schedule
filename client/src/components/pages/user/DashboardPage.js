@@ -51,6 +51,7 @@ export class DashboardPage extends Component {
               viewGoal={this.props.viewGoal}
               editGoal={(goal) => this.props.editGoal(goal)}
               toggleEdit={this.props.toggleEdit}
+              newGoal={this.props.newGoal}
             />
           </Route>
           <Route path="/">

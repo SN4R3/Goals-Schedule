@@ -12,7 +12,7 @@ export class milestone extends Component {
     let milestone = this.props.milestone
 
     milestone.goal_id = goal_id ? goal_id : null
-    this.state = { milestone: milestone };
+    this.state = { milestone: milestone, edit: this.props.edit };
 
     this.form = React.createRef();
     this.handleChange = this.handleChange.bind(this);
@@ -35,11 +35,27 @@ export class milestone extends Component {
     if(this.form.current.reportValidity()) {
       milestone.deadline = moment(milestone.deadline).format();
       this.props.addUpdateMilestone(milestone)
+      this.setState({edit: false})
     }
   }
 
+  deadlineIn() {
+    let { deadline } = this.state.deadline
+    if(moment(deadline).diff(moment(), 'days') > 0) {
+      return moment(deadline).diff(moment(), 'days') + ' Days'
+    } else if(moment(deadline).diff(moment(), 'hours') > 0) {
+      return moment(deadline).diff(moment(), 'hours') + 'hrs'
+    } else if(moment(deadline).diff(moment(), 'minutes') > 0) {
+      return moment(deadline).diff(moment(), 'minutes') + 'mins'
+    } else {
+      return 'Times Up!'
+    }
+  }
+
+
   render() {
-    let { edit } = this.props
+    let { edit } = this.state
+    let { goal_id } = this.props.milestone
     let { 
       id,
       name,
@@ -56,7 +72,29 @@ export class milestone extends Component {
             {status}
           </div>
         </div>
-        <form ref={this.form} onSubmit={this.submitForm}>    
+        <div className={`${edit ? 'd-none' : 'mt-2'}`}>
+          <div className={`p-3 border-top`} >
+            <div className="d-flex py-2 justify-content-around" style={{color: '#777777'}}>
+              <div className="text-center">
+                {name}
+              </div>
+              <div className="text-center">
+                <i className="fas fa-bullseye"></i> 
+                {" "}{target} {unit} 
+              </div>
+              <div className="text-center">
+                <i className="fas fa-stopwatch"></i>{" "}
+                {moment(deadline).format('DD/MM/YYYY')}
+              </div>
+            </div>
+          </div>
+          <div className="text-center">
+            <button className="btn btn-primary" onClick={() => this.setState({edit: true})}>
+              <i className="fa fa-edit"></i> Edit
+            </button>
+          </div>
+        </div>
+        <form className={`${!edit ? 'd-none' : ''}`} ref={this.form} onSubmit={this.submitForm}>    
           <div className="form-row my-3">
             {/* Name */}
             <div className={`form-group col-12`}>
@@ -148,8 +186,9 @@ export class milestone extends Component {
             </div>
           </div>
           <div className={`justify-content-around align-items-center ${!edit ? 'd-none' : 'd-flex'}`}>
-            <button className={`btn btn-success btn-sm`}>
-              <i className={`fa fa-${id ? 'check' : 'plus'}`}></i> {id ? 'Update' : 'Add'}
+            <button className={`${(edit || !goal_id) ? '' : 'd-none'} btn btn-success btn-sm`}>
+              <i className={`fa fa-${id ? 'check' : 'plus'}`}></i>{" "}
+              {id ? 'Update' : 'Add'}
             </button>
             <div className={`btn btn-danger btn-sm ${!id ? 'd-none' : ''}`}  onClick={() => this.props.removeMilestone(id)}>
               <i className="fa fa-times"></i> Remove

@@ -54,6 +54,10 @@ class App extends Component {
     });
   }
 
+  toDashboard() {
+    this.setState({redirector: <Redirect to={{ pathname: "/user" }} />})
+  }
+
   render() {
     const { user, loaded, redirector } = this.state;
     let pages = <React.Fragment />;
@@ -119,7 +123,11 @@ class App extends Component {
       <Router>
         {redirector}
         <div style={{ minHeight: "80vh" }}>
-          <NavBar user={user} userLoggedIn={this.authUser} userLoggedOut={this.authUser} />
+          <NavBar 
+            user={user} 
+            toDashboard={() => this.toDashboard()} 
+            userLoggedIn={this.authUser} 
+            userLoggedOut={this.authUser} />
           <div className="container mt-4 mb-4">{pages}</div>
         </div>
       </Router>

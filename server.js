@@ -64,6 +64,11 @@ app.use('/api/goal', goal);
 app.use('/api/category', category)
 app.use('/api/milestone', milestone)
 
+//Serve index.html by default
+app.get('/', function(req, res, next){
+  res.render('index');
+})
+
 const port = process.env.PORT || 5000;
 app.listen(port, '0.0.0.0', (err) => {
     if(err) throw err 

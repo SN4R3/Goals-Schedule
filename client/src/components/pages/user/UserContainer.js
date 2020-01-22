@@ -45,6 +45,16 @@ export class UserContainer extends Component {
     });
   }
 
+  newGoal() {
+    this.setState({
+      redirector: <Redirect to="/new-goal" push/>
+    })
+    let self = this
+    setTimeout(() => {
+      self.setState({ redirector:null })
+    }, 100)
+  }
+
   viewGoal(goal) {
     this.setState({
       selectedGoal: goal, 
@@ -151,10 +161,9 @@ export class UserContainer extends Component {
           className="switch-wrapper"
         >
           {/* New Goal */}
-          <Route 
-            path="/new-goal/:catId" 
-            render={(props) => <GoalPage categories={categories} edit={true} passNewGoal={(goal) => this.passNewGoal(goal)}/>}
-          />
+          <Route path="/new-goal">
+            <GoalPage categories={categories} edit={true} passNewGoal={(goal) => this.passNewGoal(goal)}/>
+          </Route>
           {/* View/Edit Goal */}
           <Route path="/goal">
             <GoalPage 
@@ -178,6 +187,7 @@ export class UserContainer extends Component {
               editGoal={(goal) => this.editGoal(goal)}
               toggleEdit={this.toggleEdit}
               passUpdatedGoal={(goal) => this.passUpdatedGoal(goal)}
+              newGoal={() => this.newGoal()}
             />
             {this.renderRedirector()}
           </Route>
